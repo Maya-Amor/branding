@@ -1,0 +1,3442 @@
+/* =========================================================
+   Scaling
+   The Figma design is drawn on a 1200px frame. On desktop the
+   whole layout scales with the window width, so 1rem = 16px at
+   1200px, up to a max of 18.4px from 1380px wide. All sizes below are in rem
+   (Figma px ÷ 16). Tablet and phone use a fixed 16px base.
+   ========================================================= */
+html {
+  font-size: 16px;
+}
+
+@media (min-width: 961px) {
+  html {
+    /* Grows with the window up to 1380px wide (1.15× the Figma sizes),
+       then stays that size so text doesn't get huge on big screens */
+    font-size: min(calc(100vw / 75), 18.4px);
+  }
+}
+
+/* =========================================================
+   Design tokens (from Figma)
+   ========================================================= */
+:root {
+  --bg: #f5f5f5;
+  --surface: #f7f7f7;
+  --surface-hover: #ececec;
+  --border: #e3e3e3;
+  --selected-bg: #efeff0;         /* selected pill (current page / active tab) */
+  --selected: #787878;
+
+  --text-strong: #272727;
+  --text-heading: #373737;
+  --text-muted: #404041;
+  --navy: #0a083b;
+
+  --font-sans: "Google Sans Flex", "Google Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-alt: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --content-width: 57rem;   /* 912px */
+  --gutter: 1rem;
+  --radius-card: 1rem;      /* 16px */
+}
+
+/* =========================================================
+   Base
+   ========================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-strong);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Line break used only on phones */
+.br-mobile {
+  display: none;
+}
+
+/* Phone-only starting spot for the menu button in the hero */
+.hero__menu-slot {
+  display: none;
+}
+
+h1, h2, h3, h4, p, ul, dl, dd, figure {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--text-strong);
+  outline-offset: 3px;
+}
+
+.container {
+  width: 100%;
+  max-width: calc(var(--content-width) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* =========================================================
+   Pill navigation (hero + footer)
+   ========================================================= */
+.pill-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;                 /* 40px (85% of Figma 47px) */
+  padding: 0.266rem;              /* same gap on every side */
+  background: var(--surface);
+  border: 0.094rem solid var(--border);
+  border-radius: 4.625rem;
+}
+
+.pill-nav__link {
+  padding: 0.584rem 1.01rem;      /* 85% of Figma 11px 19px */
+  border: 1px solid transparent;  /* reserves space for the hover stroke */
+  border-radius: 4.625rem;
+  font-size: 0.629rem;            /* 85% of Figma 11.8px */
+  font-weight: 300;
+  line-height: normal;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.pill-nav__link:hover {
+  background: var(--surface-hover);
+  color: var(--text-strong);
+}
+
+.site-header .pill-nav__link:hover,
+.hero .pill-nav__link:hover {
+  border-color: var(--border);
+}
+
+/* Current page (e.g. "About" on the About page) */
+/* Selected pill: one shared style for the current navbar link
+   (e.g. "About", or "My projects" while viewing the projects)
+   and the active About tab. */
+.pill-nav__link[aria-current]:not([aria-current="false"]),
+.pill-nav__link[aria-current]:not([aria-current="false"]):hover,
+.about__tab[aria-selected="true"],
+.about__tab[aria-selected="true"]:hover {
+  background: var(--selected-bg);
+  border-color: var(--selected);
+  box-shadow: inset 0 0 0 0.5px var(--selected);  /* 1.5px outline in total, like Figma */
+  color: var(--selected);
+  font-weight: 600;
+}
+
+/* Reserves the bold width so pills don't shift when they get selected
+   (js/main.js copies each label into data-label) */
+.pill-nav__link,
+.about__tab,
+.cs-nav__link {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pill-nav__link::after,
+.about__tab::after,
+.cs-nav__link::after {
+  content: attr(data-label);
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 600;
+}
+
+.pill-nav--footer .pill-nav__link {
+  font-family: var(--font-alt);
+  font-weight: 400;
+}
+
+/* =========================================================
+   Sticky header
+   Layout here = the final "docked" position (logo + navbar side by side).
+   On Home, js/main.js moves the logo and navbar from their hero spots
+   into these positions as you scroll, and fades the shadows in via --dock.
+   ========================================================= */
+.site-header {
+  --dock: 0;                      /* 0 = no shadow (in hero), 1 = full shadow (docked) */
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;                      /* 16px between logo and navbar */
+  padding: 1.25rem var(--gutter); /* 20px */
+  pointer-events: none;           /* only the logo/links are clickable, not the empty bar */
+}
+
+.site-header > * {
+  position: relative;
+  pointer-events: auto;
+}
+
+/* Docked shadows: fade in with --dock so the header stands out over the page */
+.site-header .pill-nav,
+.site-header__menu-btn {
+  box-shadow: 0 0.25rem 0.875rem rgba(0, 0, 0, calc(0.1 * var(--dock)));
+}
+
+.site-header__logo img {
+  filter: drop-shadow(0 0.125rem 0.25rem rgba(0, 0, 0, calc(0.18 * var(--dock))));
+}
+
+/* Soft blurred patch behind the logo once it's docked, so it stays readable
+   over busy content. Round with feathered edges, so there's no hard outline. */
+.site-header__logo {
+  isolation: isolate;
+}
+
+.site-header__logo::before {
+  content: "";
+  position: absolute;
+  inset: -0.75rem -0.9rem;
+  z-index: -1;
+  border-radius: 50%;
+  background: rgba(245, 245, 245, 0.35);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent);
+  mask-image: radial-gradient(closest-side, #000 55%, transparent);
+  opacity: var(--dock);
+  pointer-events: none;
+}
+
+.site-header__logo,
+.site-header__nav {
+  display: block;
+  transform-origin: top left;     /* so the docked shrink is anchored predictably */
+  will-change: transform;
+}
+
+.site-header__menu-btn {
+  display: none;
+}
+
+/* Page content below the header shouldn't hide under it when jumping to a section */
+#facts,
+#projects,
+#contact {
+  scroll-margin-top: 6.5rem;
+}
+
+/* =========================================================
+   Hero — fills the first screen
+   ========================================================= */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3.375rem;                  /* 54px */
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-block: 3rem;
+  text-align: center;
+}
+
+.hero__logo-slot,
+.site-header__logo img {
+  width: 2.342rem;                /* 85% of the Figma-minus-5% size */
+  height: auto;
+}
+
+.hero__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-heading);
+}
+
+.hero__title {
+  margin-bottom: 1.9375rem;       /* 31px */
+  font-size: 1.875rem;            /* 30px */
+  font-weight: 500;
+  line-height: 1.069;
+}
+
+.hero__bio {
+  font-size: 1rem;                /* 16px */
+  font-weight: 400;
+  line-height: 1.069;
+}
+
+.hero__bio + .hero__bio {
+  margin-top: 1.069em;
+}
+
+.hero .pill-nav {
+  max-width: 100%;
+}
+
+/* On desktop/tablet the hero logo + navbar are invisible placeholders:
+   the header copies are drawn on top of them and travel up on scroll. */
+@media (min-width: 641px) {
+  .js .site-header--home ~ .hero .hero__logo-slot,
+  .js .site-header--home ~ .hero .hero__nav-slot {
+    visibility: hidden;
+  }
+}
+
+/* =========================================================
+   Intro to projects
+   ========================================================= */
+.intro {
+  display: flex;
+  justify-content: center;
+  padding-top: 6rem;
+  padding-bottom: 5rem;           /* 80px */
+}
+
+.intro__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9375rem;                 /* 15px */
+  max-width: 20.625rem;           /* 330px */
+  font-size: 0.875rem;            /* 14px */
+  font-weight: 300;
+  line-height: normal;
+  color: #000;
+  text-align: center;
+}
+
+.intro__link img {
+  width: 1rem;
+}
+
+/* =========================================================
+   Projects
+   ========================================================= */
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: 8.375rem;                  /* 134px */
+  padding-top: 4.875rem;          /* 78px */
+  scroll-margin-top: 1.5rem;
+}
+
+.project {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;                    /* 24px */
+}
+
+.project__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.project__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;                   /* 12px */
+}
+
+.project__label {
+  font-family: var(--font-alt);
+  font-size: 0.9375rem;           /* 15px */
+  font-weight: 500;
+  line-height: 1.069;
+}
+
+.project__title {
+  font-size: 1.625rem;            /* 26px */
+  font-weight: 600;
+  line-height: normal;
+}
+
+/* Each project sets its own colors on its <article>: --label and --card */
+.project__label { color: var(--label, var(--selected)); }
+
+/* Card = the project's cover image (912 × 500) on its project color */
+.project__card {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  aspect-ratio: 912 / 500;
+  container-type: inline-size;
+  background: var(--card, var(--surface-hover));
+}
+
+.project__cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Screenshot cover (Sender, as on the UI/UX portfolio): the screen sits on the
+   card color, rising from the bottom, and slides up a little on hover */
+.project__screen {
+  position: absolute;
+  left: 7.294%;                   /* 66.5 / 912 */
+  top: 34.34%;                    /* 171.7 / 500 */
+  width: 85.41%;                  /* 779 / 912 */
+  border-radius: 1.754cqi;        /* 16px at 912px card width, scales with the card */
+  transition: transform var(--hover-duration) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .project__card:hover .project__screen { transform: translateY(-6%); }
+}
+
+.project__card:focus-visible .project__screen { transform: translateY(-6%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .project__screen { transition: none; }
+}
+
+/* White covers (Metropoline) need an outline to stand off the page */
+.project__card--outlined {
+  border: 1px solid var(--border);
+}
+
+/* No cover yet: the project name, big and centered */
+.project__card--empty {
+  display: grid;
+  place-items: center;
+}
+
+.project__placeholder {
+  font-size: 6cqi;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--label, var(--selected));
+  opacity: 0.55;
+}
+
+/* View Project button */
+.btn-pill {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;                    /* 8px */
+  padding: 0.625rem 1.125rem;     /* 10px 18px */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.8125rem;           /* 13px */
+  font-weight: 300;
+  line-height: 1.22;
+  color: var(--text-strong);
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.btn-pill:hover {
+  background: var(--surface-hover);
+}
+
+.btn-pill__arrow {
+  /* The Figma arrow points down; rotate it to point right */
+  width: 0.6875rem;               /* 11px */
+  transform: rotate(-90deg);
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;                  /* 6px */
+}
+
+.tag {
+  min-width: 5.375rem;            /* 86px */
+  padding: 0.625rem 1.25rem;      /* 10px 20px */
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-family: var(--font-alt);
+  font-size: 0.75rem;             /* 12px */
+  line-height: 1.22;
+  text-align: center;
+  color: var(--text-strong);
+}
+
+/* =========================================================
+   Footer
+   ========================================================= */
+.footer {
+  margin-top: 13.5625rem;         /* 217px */
+  padding-bottom: 2.3125rem;      /* 37px */
+}
+
+.footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.footer__copy,
+.footer__contact {
+  font-size: 0.75rem;             /* 12px */
+  font-weight: 300;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.footer__contact {
+  display: flex;
+  gap: 1.875rem;                  /* 30px */
+}
+
+.footer__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;                   /* 12px */
+}
+
+/* Smaller pill than the hero navbar */
+.pill-nav--footer {
+  height: 2.5rem;                 /* 40px */
+  padding: 0.25rem;               /* 4px */
+}
+
+.pill-nav--footer .pill-nav__link {
+  padding: 0.5625rem 0.9375rem;   /* 9px 15px */
+  font-size: 0.6875rem;           /* 11px */
+}
+
+/* =========================================================
+   Floating back-to-top button
+   Hidden at the top of the page; js/main.js adds .is-visible
+   once you start scrolling.
+   ========================================================= */
+.back-to-top {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  z-index: 10;
+  border-radius: 0.6rem;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0.75rem);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top.is-visible:hover {
+  transform: translateY(-0.125rem);
+}
+
+.back-to-top img {
+  width: 2.5rem;                  /* 40px */
+}
+
+/* =========================================================
+   About page
+   ========================================================= */
+.about {
+  padding-top: 11.5rem;           /* title sits closer to the navbar than in Figma (~232px) */
+}
+
+.about__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.about__title {
+  max-width: 24rem;               /* 383px → wraps onto 2 lines */
+  font-size: 1.875rem;            /* 30px */
+  font-weight: 300;
+  line-height: normal;
+  color: var(--selected);
+}
+
+.about__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem 1.125rem;          /* 18px */
+  color: #000;
+}
+
+.about__name {
+  font-size: 1.125rem;            /* 18px */
+  font-weight: 400;
+}
+
+.about__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;                 /* 5px */
+  font-size: 0.875rem;            /* 14px */
+  font-weight: 300;
+}
+
+.about__status::before {
+  content: "";
+  width: 0.43rem;                 /* 7px green dot */
+  height: 0.43rem;
+  border-radius: 50%;
+  background: #90ea91;
+}
+
+.about__body {
+  display: grid;
+  grid-template-columns: 16.5rem 1fr;   /* 264px photo (about 10% smaller than Figma) + story */
+  align-items: start;
+  gap: 4rem;                            /* 64px */
+  margin-top: 7.375rem;                 /* 118px */
+}
+
+/* Photo: rounded with a light gray frame, cropped like in Figma */
+.about__photo {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 296 / 421;
+  border: 0.25rem solid #d9d9d9;
+  border-radius: var(--radius-card);
+}
+
+.about__photo img {
+  position: absolute;
+  top: -19.71%;
+  left: -19.01%;
+  width: 138.01%;
+  max-width: none;
+  height: 129.12%;
+  object-fit: cover;
+}
+
+/* Tabs */
+.about__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem 0.625rem;         /* 6px between rows, 10px between pills */
+}
+
+.about__tab {
+  display: inline-flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  align-items: center;
+  padding: 0.625rem 1.375rem;     /* 10px 22px */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font: inherit;
+  font-size: 0.74rem;             /* 11.8px */
+  font-weight: 300;
+  line-height: normal;
+  color: #000;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.about__tab:hover {
+  background: var(--surface-hover);
+}
+
+/* Story text. All four panels share one grid cell, so the area is always as tall
+   as the longest story and the page doesn't jump when switching tabs. */
+.about__panels {
+  display: grid;
+  margin-top: 2.75rem;            /* 44px */
+}
+
+.about__panel[hidden] {
+  display: block;
+  visibility: hidden;
+}
+
+.about__panel {
+  grid-area: 1 / 1;
+  font-size: 0.875rem;            /* 14px */
+  font-weight: 300;
+  line-height: normal;
+  color: var(--text-strong);
+}
+
+.about__panel p + p {
+  margin-top: 1.25em;             /* blank line between paragraphs */
+}
+
+.about__highlight {
+  font-weight: 500;
+}
+
+/* =========================================================
+   Tablet (≤ 960px)
+   ========================================================= */
+@media (max-width: 960px) {
+  :root { --gutter: 2rem; }
+
+  .projects { gap: 6.5rem; }
+
+  .footer { margin-top: 10rem; }
+
+  .footer__inner {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 1.25rem;
+  }
+
+  .footer__copy { order: 3; width: 100%; text-align: center; }
+
+  /* About: narrower photo column */
+  .about { padding-top: 8.5rem; }
+
+  .about__body {
+    grid-template-columns: 12.5rem 1fr;
+    gap: 2.5rem;
+    margin-top: 5rem;
+  }
+}
+
+/* =========================================================
+   Phone (≤ 640px)
+   ========================================================= */
+@media (max-width: 640px) {
+  :root { --gutter: 2rem; }       /* 32px side margins on phones */
+
+  /* Hero no longer fills the whole screen on phones, so the intro line sits closer */
+  .hero {
+    gap: 2.5rem;
+    min-height: auto;
+    padding-top: 6.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .hero__title {
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+  }
+
+  .hero__bio { font-size: 0.9375rem; }
+
+  /* Phones keep the full-size logo + navbar so links stay easy to tap */
+  .pill-nav:not(.pill-nav--footer) { height: 2.9375rem; padding: 0.3125rem; }
+  .pill-nav:not(.pill-nav--footer) .pill-nav__link { font-size: 0.74rem; }
+  .hero__logo-slot { width: 2.755rem; }
+
+  /* Phones: the hero shows only the menu button (centered) instead of the navbar */
+  .hero__nav-slot { display: none; }
+
+  .hero__menu-slot {
+    display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+    visibility: hidden;
+  }
+
+  .site-header--home .site-header__menu-btn {
+    animation: rise-in var(--hero-duration) var(--ease-out) both;
+    animation-delay: calc(0.2s + var(--hero-stagger) * 3.6);
+  }
+
+  .pill-nav__link { padding: 0.6875rem 0.625rem; }
+
+  .intro {
+    padding-top: 6rem;
+    padding-bottom: 4.5rem;
+  }
+
+  .projects {
+    gap: 8rem;
+    padding-top: 3.5rem;
+    padding-inline: 2.75rem;      /* 44px: project cards get extra side room */
+  }
+
+  .project { gap: 1.5rem; }
+
+  .project__header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .project__title { font-size: 1.375rem; }
+
+  /* About: photo on top, story below */
+  .about { padding-top: 9rem; }
+
+  .about__title { font-size: 1.625rem; }
+
+  .about__body {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    margin-top: 3.5rem;
+  }
+
+  .about__photo {
+    width: 100%;
+    max-width: 15rem;
+    justify-self: center;
+  }
+
+  .about__tabs { gap: 0.5rem; }
+
+  .about__tab {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+
+  .about__panels { margin-top: 2rem; }
+
+  .br-desktop { display: none; }
+  .br-mobile { display: inline; }
+
+  .footer {
+    margin-top: 10rem;
+    padding-bottom: 3rem;
+  }
+
+  .back-to-top { right: 2.5rem; bottom: 2.5rem; }
+
+  /* ----- Header on phones: logo + hamburger, links in a dropdown ----- */
+  .site-header {
+    --dock: 1;
+    justify-content: space-between;
+    padding: 2.5rem;               /* 40px from the top and side edges */
+  }
+
+  .site-header__logo {
+    transition: opacity 0.5s var(--ease-out), visibility 0.5s;
+  }
+
+  .site-header__logo img { width: 2rem; }
+
+  /* Home: the menu button is always there; the small logo only appears once
+     you scroll past the hero (so there aren't two logos on screen) */
+  .site-header--home:not(.is-visible) .site-header__logo {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .site-header__menu-btn {
+    -webkit-appearance: none;     /* iPhone: drop the default button styling */
+    appearance: none;
+    color: var(--text-strong);
+  }
+
+  .site-header__menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    /* Same look as the back-to-top button */
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+  }
+
+  .site-header__menu-btn span {
+    display: block;
+    flex-shrink: 0;
+    width: 1rem;                  /* explicit size so the lines always draw (iPhone) */
+    height: 2px;
+    background: var(--text-strong);
+    border-radius: 2px;
+    transition: transform 0.35s var(--ease-out), opacity 0.2s ease;
+  }
+
+  /* Hamburger → X */
+  .menu-open .site-header__menu-btn span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-open .site-header__menu-btn span:nth-child(2) { opacity: 0; }
+  .menu-open .site-header__menu-btn span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .site-header__nav {
+    position: absolute;
+    top: calc(100% - 2rem);        /* 8px under the button (header has 40px bottom padding) */
+    right: 2.5rem;                 /* lines up with the menu button */
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 -0.5rem;          /* "translate" so it combines with the travel movement */
+    transition: opacity 0.3s ease, translate 0.3s var(--ease-out), visibility 0.3s;
+  }
+
+  .menu-open .site-header__nav {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+  }
+
+  .site-header__nav .pill-nav {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    min-width: 11rem;
+    padding: 0.375rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.08);
+    animation: none;
+  }
+
+  .site-header__nav .pill-nav .pill-nav__link {
+    align-items: flex-start;       /* left-align text in the dropdown */
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .footer__contact {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 370px) {
+  .pill-nav__link {
+    padding: 0.6875rem 0.4375rem;
+    font-size: 0.6875rem;
+  }
+}
+
+/* =========================================================
+   Animations
+   Timing and distances are grouped here so they're easy to tweak.
+   ========================================================= */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);   /* fast start, soft landing */
+
+  /* Speeds — change these to make animations faster or slower */
+  --hero-duration: 2.6s;      /* how long each hero item takes to rise in */
+  --hero-stagger: 0.4s;       /* gap between one hero item and the next */
+  --hover-duration: 1.3s;     /* screenshot slide on card hover */
+  --reveal-duration: 2s;      /* project fade-up on scroll */
+  --reveal-stagger: 0.24s;    /* gap between title row, card and tags */
+}
+
+/* ----- 1. Hero: fade + rise in on page load, one after another ----- */
+/* Uses "translate" (not "transform") so it can combine with the scroll
+   movement that js/main.js applies to the header items. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    translate: 0 1.25rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.hero__logo-slot,
+.site-header--home .site-header__logo img,
+.hero__title,
+.hero__bio,
+.hero .pill-nav,
+.site-header--home .pill-nav {
+  animation: rise-in var(--hero-duration) var(--ease-out) both;
+}
+
+.hero__logo-slot,
+.site-header--home .site-header__logo img { animation-delay: 0.2s; }
+.hero__title            { animation-delay: calc(0.2s + var(--hero-stagger)); }
+.hero__bio              { animation-delay: calc(0.2s + var(--hero-stagger) * 2); }
+.hero__bio + .hero__bio { animation-delay: calc(0.2s + var(--hero-stagger) * 2.6); }
+.hero .pill-nav,
+.site-header--home .pill-nav { animation-delay: calc(0.2s + var(--hero-stagger) * 3.6); }
+
+/* About: title and name rise in on page load, like the Home hero */
+.about__title,
+.about__meta {
+  animation: rise-in var(--hero-duration) var(--ease-out) both;
+}
+
+.about__title { animation-delay: 0.2s; }
+.about__meta  { animation-delay: calc(0.2s + var(--hero-stagger)); }
+
+/* ----- 2. Project card: cover zooms in slightly on hover ----- */
+.project__cover,
+.project__placeholder {
+  transition: transform var(--hover-duration) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .project__card:hover .project__cover,
+  .project__card:hover .project__placeholder {
+    transform: scale(1.04);
+  }
+}
+
+.project__card:focus-visible .project__cover,
+.project__card:focus-visible .project__placeholder {
+  transform: scale(1.04);
+}
+
+/* ----- 3. Intro line + projects: fade up as they scroll into view -----
+   js/main.js adds .is-revealed when one enters the screen.
+   Inside each, the items follow each other slightly
+   (intro: text, then arrow / project: title row, card, tags). */
+.js .intro__link > *,
+.js .project > * {
+  opacity: 0;
+  transform: translateY(2.5rem);
+  transition: opacity var(--reveal-duration) var(--ease-out), transform var(--reveal-duration) var(--ease-out);
+}
+
+.js .intro__link > :nth-child(2),
+.js .project > :nth-child(2) { transition-delay: var(--reveal-stagger); }
+.js .project > :nth-child(3) { transition-delay: calc(var(--reveal-stagger) * 2); }
+
+.js .intro.is-revealed .intro__link > *,
+.js .project.is-revealed > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Generic: any element with class="reveal" fades up when it scrolls into view */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(2.5rem);
+  transition: opacity var(--reveal-duration) var(--ease-out), transform var(--reveal-duration) var(--ease-out);
+}
+
+.js .reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* About: story follows the photo slightly */
+.js .about__story.reveal { transition-delay: var(--reveal-stagger); }
+
+/* ----- 4. About tabs: new text fades in when switching ----- */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.about__panel.is-switching {
+  animation: panel-in 0.7s var(--ease-out) both;
+}
+
+/* ----- Respect "reduce motion" system setting ----- */
+@media (prefers-reduced-motion: reduce) {
+  .hero__logo-slot,
+  .site-header__logo img,
+  .hero__title,
+  .hero__bio,
+  .pill-nav,
+  .about__title,
+  .about__meta,
+  .about__panel.is-switching,
+  .site-header--home .site-header__menu-btn {
+    animation: none;
+  }
+
+  .js .reveal,
+  .js .intro__link > *,
+  .js .project > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .project__cover,
+  .project__placeholder {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   Case study pages (WordWise, Sender)
+   Sizes in rem = Figma px ÷ 16 (scales with the window on desktop).
+   ========================================================= */
+/* Home + case studies: content 840px wide on the 1200px frame (Figma: 912px) */
+.page-home {
+  --content-width: 52.5rem;
+}
+
+.page-case {
+  --content-width: 52.5rem;       /* 840px: narrower than other pages (912px), more space on the sides */
+  --project: #581c89;             /* project color (WordWise purple) for the section navigator */
+  --project-accent: #a855f7;
+  background: #fff;
+}
+
+.cs {
+  --cs-section: 13rem;            /* space between big sections */
+  --cs-block: 4rem;               /* space between blocks inside a section */
+  --cs-card-bg: #f9fafb;
+  --cs-card-border: #d1d5dc;
+  --cs-purple: #581c89;
+  --cs-violet: #7e40b9;
+  --cs-accent: #a855f7;
+  --cs-heading: #000;             /* headings and strong text */
+  padding-top: 10.3rem;           /* breadcrumb sits ~165px down, under the header */
+  color: var(--cs-heading);
+}
+
+.cs strong {
+  font-weight: 600;
+}
+
+/* ----- Intro ----- */
+.cs-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.cs-breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  transition: opacity 0.2s ease;
+}
+
+.cs-breadcrumb a:hover {
+  opacity: 0.65;
+}
+
+.cs-breadcrumb img {
+  width: 1.45rem;
+}
+
+.cs-title {
+  max-width: 35rem;               /* 552px, wraps onto 2 lines */
+  margin-top: 2.6rem;
+  font-size: 2.1875rem;           /* 35px */
+  font-weight: 400;
+  line-height: normal;
+}
+
+.cs-title--wordwise { color: var(--cs-purple); }
+
+.cs-lead {
+  max-width: 44rem;
+  margin-top: 1.125rem;
+  font-size: 1.125rem;            /* 18px */
+  font-weight: 300;
+  line-height: normal;
+  color: #555;
+}
+
+/* ----- Screenshots ----- */
+.cs-shot {
+  margin: 0;
+}
+
+.cs-shot > img {
+  width: 100%;
+  border: 1px solid var(--cs-card-border);
+  border-radius: 1rem;
+}
+
+.cs-shot--hero {
+  margin-top: 2.25rem;
+}
+
+.cs-shot--hero > img {
+  aspect-ratio: 912 / 540;
+  object-fit: cover;
+}
+
+.cs-shot--contain {
+  margin-top: 3rem;
+}
+
+.cs-shot--contain > img {
+  aspect-ratio: 912 / 540;
+  object-fit: contain;
+  background: #fff;
+}
+
+.cs-shot figcaption,
+.anno figcaption {
+  margin-top: 0.45rem;
+  font-size: 1rem;                /* 16px (Figma: 18px) */
+  font-weight: 300;
+  color: var(--text-strong);
+}
+
+/* ----- Sections & type ----- */
+.cs-section {
+  margin-top: var(--cs-section);
+}
+
+.cs-block {
+  margin-top: var(--cs-block);
+}
+
+/* A sub-section that starts a new step (e.g. "First redesign Iteration") */
+.cs-block--step {
+  margin-top: calc(var(--cs-block) * 1.75);
+}
+
+/* Boxed note that follows a list needs more room */
+.cs-verdicts + .cs-callout {
+  margin-top: calc(var(--cs-block) * 1.5);
+}
+
+.cs-h2 {
+  margin-bottom: 1.125rem;
+  font-size: 1.875rem;            /* 30px */
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.cs-h2--accent { color: var(--cs-violet); }
+.cs-h2--bold   { font-weight: 600; }
+
+.cs-h3 {
+  margin-bottom: 1.125rem;
+  font-size: 1.625rem;            /* 26px */
+  font-weight: 300;
+  line-height: normal;
+  color: var(--cs-violet);
+}
+
+.cs-h4 {
+  margin-bottom: 1.5rem;
+  font-size: 1.125rem;            /* 18px */
+  font-weight: 500;
+  line-height: normal;
+}
+
+.cs-h4--navy  { font-weight: 600; color: var(--navy); }
+.cs-h4--light { font-weight: 300; }
+
+.cs-text {
+  font-size: 1.125rem;            /* 18px */
+  font-weight: 300;
+  line-height: normal;
+  color: var(--text-strong);
+}
+
+.cs-text p + p,
+.cs-statement p + p {
+  margin-top: 1.26em;             /* one empty line between paragraphs */
+}
+
+.cs-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+/* Boxed note (e.g. "The core challenge was...") */
+.cs-callout {
+  margin-top: 1.5rem;
+  padding: 1.875rem;              /* 30px */
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-card-border);
+  border-radius: 0.75rem;         /* 12px */
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--cs-purple);
+}
+
+.cs-callout--strong {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* Purple statement line */
+.cs-statement {
+  margin-top: 2.4rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: normal;
+  color: var(--cs-purple);
+}
+
+/* ----- Cards ----- */
+.cs-cards {
+  display: grid;
+  gap: 1.4375rem;                 /* 23px */
+  margin-top: 1.125rem;
+}
+
+.cs-text + .cs-cards {
+  margin-top: 2.4rem;
+}
+
+.cs-cards--2 { grid-template-columns: repeat(2, 1fr); }
+
+.cs-cards--3 {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.6875rem;                 /* 27px */
+}
+
+.cs-card {
+  min-height: 10rem;              /* 160px */
+  padding: 1.875rem;
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-card-border);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: normal;
+  color: var(--text-strong);
+}
+
+.cs-card__title {
+  margin-bottom: 1.125rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--cs-heading);
+}
+
+.cs-cards--sm .cs-card {
+  min-height: 13.75rem;           /* 220px */
+  color: var(--cs-heading);
+}
+
+.cs-cards--sm .cs-card__title {
+  font-size: 1rem;
+}
+
+.cs-cards--reflection {
+  gap: 1.5rem;
+  margin-top: 2.125rem;
+}
+
+.cs-cards--reflection .cs-card {
+  min-height: 24.125rem;          /* 386px */
+}
+
+.cs-cards--reflection .cs-card__title {
+  font-weight: 500;
+  color: var(--text-strong);
+}
+
+/* ----- Overview + facts card ----- */
+.cs-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 32.4rem) 18.75rem;   /* 518px text + 300px card */
+  justify-content: space-between;
+  align-items: start;
+  margin-top: 6.5rem;
+}
+
+.cs-overview .cs-h2 {
+  margin-top: 0.8rem;
+}
+
+.cs-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 1.375rem;                  /* 22px */
+  margin: 0;
+  padding: 1.875rem;
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-card-border);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  line-height: normal;
+  color: var(--navy);
+}
+
+.cs-facts div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.cs-facts dt { font-weight: 600; }
+.cs-facts dd { margin: 0; font-weight: 300; }
+
+/* ----- Verdicts (what worked / what didn't) ----- */
+.cs-verdict {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;                  /* 14px */
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: normal;
+}
+
+.cs-verdict > img {
+  flex-shrink: 0;
+  width: 1.5rem;
+  margin-top: -0.15rem;           /* centers the icon on the title line */
+}
+
+.cs-verdict h4 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.cs-verdict p + p {
+  margin-top: 1.26em;
+}
+
+.cs-verdict u {
+  text-underline-offset: 0.15em;
+}
+
+.cs-verdict--good { color: var(--text-strong); }
+.cs-verdict--bad  { color: var(--navy); }
+
+.cs-verdicts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5625rem;
+  max-width: 49.8rem;             /* 797px, centered like Figma */
+  margin: 6.75rem auto 0;
+}
+
+.cs-legacy {
+  display: grid;
+  grid-template-columns: 35.44rem 1fr;   /* 567px screenshot + notes */
+  gap: 3.8rem;
+  align-items: start;
+}
+
+.cs-legacy .cs-verdict {
+  margin-top: 3.25rem;
+}
+
+/* ----- Existing navigation diagram ----- */
+.navmap {
+  text-align: center;
+}
+
+.navmap__node {
+  padding: 0.5rem 0.75rem;        /* tighter, matches the flow diagram boxes */
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-card-border);
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.75rem;
+  color: var(--text-strong);
+  white-space: nowrap;
+}
+
+.navmap__node--root {
+  display: inline-block;
+  width: 8.125rem;                /* 130px */
+  border-color: var(--cs-violet);
+  font-weight: 700;
+  color: var(--cs-violet);
+}
+
+.navmap__lines {
+  width: 83.8%;
+  height: 4.9rem;
+  margin: 0.5625rem 0 0 8.45%;
+}
+
+.navmap__arrow {
+  display: none;
+}
+
+.navmap__row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2.125rem;
+  margin-top: 0.78rem;
+}
+
+/* ----- New learning flow diagram (SVG) ----- */
+.flow {
+  margin-top: 1.125rem;
+}
+
+.flow__svg {
+  display: block;
+  width: 81.2%;                   /* 740 / 912 */
+  height: auto;
+  margin-left: 9.4%;
+  overflow: visible;
+}
+
+.flow__node rect {
+  fill: var(--cs-card-bg);
+  stroke: var(--cs-card-border);
+  stroke-width: 1;
+}
+
+.flow__node text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 300;
+  fill: var(--text-strong);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.flow__node--root rect { stroke: var(--cs-violet); }
+.flow__node--root text { font-weight: 700; fill: var(--cs-violet); }
+
+/* ----- Annotated screenshots -----
+   Desktop: notes and arrows sit on top of the screenshot, positioned like Figma.
+   Tablet/phone: notes become a list under the screenshot (see media queries). */
+.anno {
+  margin: 2.25rem 0 0;
+}
+
+.anno + .anno {
+  margin-top: 4.4rem;
+}
+
+.anno--home {
+  margin-top: 6rem;               /* room for the note that sits above the screen */
+}
+
+.anno__stage {
+  position: relative;
+  container-type: inline-size;    /* notes size themselves from the screenshot width */
+}
+
+.anno__img {
+  width: 100%;
+  border-radius: 1rem;
+}
+
+/* Darkens the screenshot slightly so the notes stand out */
+.anno__stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+.anno--legacy .anno__img {
+  aspect-ratio: 912 / 540;
+  object-fit: fill;
+  border: 1px solid var(--cs-card-border);
+}
+
+/* Arrows: drawn by js/main.js so each one starts right at the edge of its note */
+.anno__links {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.anno__links path {
+  fill: none;
+  stroke: var(--project-accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.anno__notes {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.anno__note {
+  position: absolute;
+  /* Sized in % of the screenshot width (cqi), so notes keep the same proportions
+     as in Figma whatever the screenshot size: 15px padding, 12px corners, 10px text at 912px */
+  padding: calc(15 / 912 * 100cqi);
+  background: var(--cs-card-bg);
+  border: 1px solid var(--project-accent);
+  border-radius: calc(12 / 912 * 100cqi);
+  font-size: max(calc(10 / 912 * 100cqi), 10px);   /* never smaller than 10px */
+  font-weight: 300;
+  line-height: normal;
+  color: var(--cs-heading);
+  pointer-events: auto;
+}
+
+.anno__note strong {
+  display: block;
+}
+
+/* ----- Case study: tablet ----- */
+@media (max-width: 960px) {
+  .cs {
+    --cs-section: 8.5rem;
+    --cs-block: 3.25rem;
+    padding-top: 8.5rem;
+  }
+
+  .cs-overview {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 5rem;
+  }
+
+  .cs-cards--3 { grid-template-columns: 1fr; }
+  .cs-cards--sm .cs-card,
+  .cs-cards--reflection .cs-card { min-height: 0; }
+
+  .cs-legacy { grid-template-columns: 1fr; gap: 0; }
+  .cs-legacy .cs-verdict { margin-top: 2rem; }
+
+  .cs-verdicts { margin-top: 4rem; }
+
+  /* Annotated screenshots: notes move below the image as a list */
+  .anno,
+  .anno--home,
+  .anno + .anno { margin-top: 3rem; }
+
+  .anno { display: flex; flex-direction: column; }
+  .anno__stage { display: contents; }
+  .anno__stage::before,
+  .anno__links { display: none; }
+
+  .anno__img { order: 1; }
+  .anno figcaption { order: 2; }
+
+  .anno__notes {
+    position: static;
+    order: 3;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .anno__note {
+    position: static;
+    left: auto !important;
+    top: auto !important;
+    width: auto !important;
+    padding: 0.9375rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .anno__note strong { margin-bottom: 0.25rem; }
+}
+
+/* ----- Case study: phone ----- */
+@media (max-width: 640px) {
+  .cs {
+    --cs-section: 8rem;
+    --cs-block: 3.5rem;
+    padding-top: 8.5rem;
+  }
+
+  .cs-title { font-size: 1.75rem; }
+  .cs-lead,
+  .cs-text,
+  .cs-statement,
+  .cs-callout--strong { font-size: 1rem; }
+
+  .cs-h2 { font-size: 1.625rem; }
+  .cs-h3 { font-size: 1.375rem; }
+
+  .cs-cards--2,
+  .cs-verdicts { grid-template-columns: 1fr; }
+  .cs-card { min-height: 0; padding: 1.5rem; }
+  .cs-callout { padding: 1.5rem; }
+
+  .anno__notes { grid-template-columns: 1fr; }
+
+  /* Navigation diagram: simple stacked version */
+  .navmap__lines { display: none; }
+
+  .navmap__arrow {
+    display: block;
+    width: 1px;
+    height: 1.75rem;
+    margin: 0.5rem auto;
+    background: #909090;
+  }
+
+  .navmap__row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 0;
+  }
+
+  /* Flow diagram: swipe sideways to see all of it */
+  .flow {
+    overflow-x: auto;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: 0.5rem var(--gutter) 1rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .flow__svg {
+    width: 38rem;
+    margin-left: 0;
+  }
+}
+
+
+/* =========================================================
+   Case study section navigator
+   Jump to any section; the one you're reading is highlighted.
+   Built by js/main.js from the sections' data-section labels.
+
+   - Wide screens (over 1100px): a vertical list in the left margin
+   - Narrower screens and phones: a row of section names under the
+     main navbar, current one in the project color with an underline
+   ========================================================= */
+.cs-nav {
+  position: fixed;
+  top: 4.6rem;                    /* just under the docked main navbar */
+  left: 50%;
+  z-index: 19;
+  max-width: calc(100% - var(--gutter) * 2);
+  padding: 0 0.875rem;
+  background: rgba(255, 255, 255, 0.94);   /* keeps names readable over the page, no visible box */
+  border-radius: 0.5rem;
+  transform: translateX(-50%);
+}
+
+.cs-nav__track {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cs-nav__track::-webkit-scrollbar {
+  display: none;
+}
+
+.cs-nav__link {
+  flex-shrink: 0;
+  padding: 0.5rem 0 0.375rem;
+  border-bottom: 2px solid transparent;
+  font-size: 0.65rem;             /* ~10.5px */
+  font-weight: 300;
+  line-height: normal;
+  color: #8a8a8a;
+  white-space: nowrap;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cs-nav__link:hover {
+  color: var(--text-strong);
+}
+
+.cs-nav__link[aria-current="true"] {
+  border-bottom-color: var(--project-accent);
+  color: var(--project);
+  font-weight: 500;
+}
+
+/* Sections stop just below the bars when jumped to */
+.page-case .cs-section {
+  scroll-margin-top: 7.5rem;
+}
+
+/* ----- Side table of contents (wide screens) ----- */
+@media (min-width: 1101px) {
+  .cs-nav--side {
+    top: 9rem;
+    /* sits in the left margin, ~3.5–4rem away from the content */
+    left: max(1.25rem, calc((100vw - var(--content-width)) / 2 - 10.5rem));
+    width: 6.5rem;
+    max-width: none;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    transform: none;
+  }
+
+  .cs-nav--side .cs-nav__track {
+    flex-direction: column;
+    gap: 0;
+    overflow: visible;
+    border-left: 1px solid var(--border);
+  }
+
+  .cs-nav--side .cs-nav__link {
+    align-items: flex-start;
+    margin-left: -1px;
+    padding: 0.375rem 0 0.375rem 0.875rem;
+    border-bottom: 0;
+    border-left: 2px solid transparent;
+    font-size: 0.7rem;
+    white-space: normal;
+  }
+
+  .cs-nav--side .cs-nav__link[aria-current="true"] {
+    border-left-color: var(--project-accent);
+  }
+
+  .page-case:has(.cs-nav--side) .cs-section {
+    scroll-margin-top: 6rem;
+  }
+}
+
+/* ----- Phones: swipeable row under the logo + menu button ----- */
+@media (max-width: 640px) {
+  .cs-nav {
+    top: 6rem;
+    left: 2.5rem;                 /* lines up with the logo and menu button */
+    right: 2.5rem;
+    max-width: none;
+    padding: 0;
+    transform: none;
+  }
+
+  /* Soft fade at the edges hints that the list scrolls sideways */
+  .cs-nav__track {
+    gap: 1.125rem;
+    padding-inline: 0.75rem;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 0.75rem, #000 calc(100% - 0.75rem), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 0.75rem, #000 calc(100% - 0.75rem), transparent);
+  }
+
+  .cs-nav__link {
+    font-size: 0.8125rem;
+  }
+
+  .page-case .cs-section {
+    scroll-margin-top: 9rem;
+  }
+}
+
+/* =========================================================
+   Sender case study
+   Same building blocks as WordWise, with Sender's theme:
+   navy text, light gray cards, orange accents, gray page.
+   ========================================================= */
+.page-case--sender {
+  --project: #f57538;             /* section navigator + arrows + note borders */
+  --project-accent: #f57538;
+  background: #f7f7f7;
+}
+
+.page-case--sender .cs {
+  --cs-card-bg: #f2f2f2;
+  --cs-card-border: #ccc;
+  --cs-violet: #f57538;           /* accent headings (e.g. "Project Overview") */
+  --cs-purple: #f57538;
+  --cs-heading: var(--navy);
+  --text-strong: var(--navy);     /* body text is navy on this page */
+}
+
+/* Section navigator background matches the gray page (tabs mode) */
+.page-case--sender .cs-nav {
+  background: rgba(247, 247, 247, 0.94);
+}
+
+.cs-title--sender {
+  max-width: 38rem;
+  color: var(--navy);
+}
+
+/* Orange highlighted words inside a paragraph */
+.cs-hl {
+  color: var(--project-accent);
+}
+
+/* Narrower facts card (256px) */
+.cs-overview--sender {
+  grid-template-columns: minmax(0, 30.8rem) 16rem;
+}
+
+/* Boxed section (e.g. "The challenge", "Option 3") */
+.cs-panel {
+  padding: 1.875rem;
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-card-border);
+  border-radius: 0.75rem;
+}
+
+.cs-panel__title {
+  margin-bottom: 1.375rem;
+  font-size: 1.625rem;            /* 26px */
+  font-weight: 400;
+  line-height: normal;
+}
+
+.cs-panel__title--accent {
+  font-weight: 500;
+  color: var(--project-accent);
+}
+
+/* Cropped screenshot strip under "The challenge" */
+.cs-crop {
+  position: relative;
+  overflow: hidden;
+  margin-top: 0.75rem;
+  aspect-ratio: 912 / 239;
+  border: 1px solid var(--cs-card-border);
+  border-radius: 1rem;
+}
+
+.cs-crop img {
+  position: absolute;
+  top: -93.87%;
+  left: 0;
+  width: 101.19%;
+  max-width: none;
+  height: 229.48%;
+}
+
+/* "The JTBD we chose…" box */
+.cs-callout--jtbd {
+  color: var(--navy);
+  font-weight: 300;
+}
+
+.cs-callout--jtbd .cs-callout__lead {
+  margin-bottom: 0.625rem;
+  font-size: 1.125rem;
+  color: var(--project-accent);
+}
+
+/* Bold conclusion line (navy) */
+.cs-conclusion {
+  margin-top: 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: normal;
+  color: var(--cs-heading);
+}
+
+.cs-center {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* ----- Existing flow (two rows of steps) ----- */
+.xflow__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.xflow__row .navmap__node {
+  flex-shrink: 0;
+}
+
+/* The first step sizes to its text (the WordWise "Home" box has a fixed width) */
+.xflow .navmap__node--root {
+  width: auto;
+}
+
+.xflow__arrow {
+  flex: 0 0 1.875rem;
+  height: 1px;
+  background: #909090;
+  position: relative;
+}
+
+.xflow__arrow::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -0.2rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-top: 1px solid #909090;
+  border-right: 1px solid #909090;
+  transform: rotate(45deg);
+}
+
+/* Connector from the end of row 1 back to the start of row 2 */
+.xflow__turn {
+  position: relative;
+  height: 4.4rem;
+  margin: 0 10.26% 0 9.03%;
+}
+
+/* Right side down, across to the left, then down into row 2 */
+.xflow__turn::before {
+  content: "";
+  position: absolute;
+  top: 0.6rem;
+  left: 0;
+  right: 0;
+  height: 1.6rem;
+  border-right: 1px solid #909090;
+  border-bottom: 1px solid #909090;
+}
+
+.xflow__turn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2.2rem;
+  bottom: 0.6rem;
+  border-left: 1px solid #909090;
+}
+
+.xflow__turn span {
+  position: absolute;
+  left: -0.2rem;
+  bottom: 0.6rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 1px solid #909090;
+  border-bottom: 1px solid #909090;
+  transform: rotate(45deg);
+}
+
+/* ----- Exploring the solution: options ----- */
+.cs-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem 4rem;
+}
+
+.cs-option__shot,
+.cs-panel__shot {
+  width: 100%;
+  border: 1px solid #333;
+}
+
+/* Options 1 + 2: slightly smaller images, so there's more space between them */
+.cs-option__shot {
+  width: 90%;
+}
+
+.cs-option__title {
+  margin: 1.7rem 0 1.5rem;
+  font-size: 1.5rem;              /* 24px (Figma: 26px) so it fits one line */
+  font-weight: 500;
+  line-height: normal;
+}
+
+.cs-option .cs-text,
+.cs-panel .cs-text {
+  font-size: 1rem;
+}
+
+.cs-option .cs-verdict {
+  margin-top: 1.5rem;
+}
+
+.cs-option .cs-verdict h4 {
+  display: inline;
+}
+
+.cs-panel__grid {
+  display: grid;
+  grid-template-columns: 24.5rem 1fr;
+  gap: 3.5rem;
+  align-items: start;
+}
+
+/* ----- Iterating the experience: 2 × 2 grid ----- */
+.cs-iters {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6rem 4.4rem;
+  margin-top: 4rem;
+}
+
+.cs-iter__shot {
+  width: 100%;
+  border-radius: 0.5rem;
+}
+
+.cs-iter__title {
+  margin: 2rem 0 1.375rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.cs-iter .cs-verdict + .cs-verdict {
+  margin-top: 1.5rem;
+}
+
+.cs-iter .cs-verdict h4 {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.cs-iter .cs-verdict p + p {
+  margin-top: 1.26em;
+}
+
+.cs-iter .cs-verdict h4 + p {
+  margin-top: 0;
+}
+
+/* Small gray note (e.g. "User testing: …") */
+.cs-note {
+  max-width: 20rem;
+  margin-bottom: 1.5rem;
+  padding: 1.125rem;
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-card-border);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 300;
+  color: #555;
+}
+
+/* ----- Annotated screenshots with a highlighted part -----
+   The screenshot is dimmed; the editor area sits on top undimmed. */
+.anno__shot {
+  position: relative;
+}
+
+.anno__shot .anno__img {
+  display: block;
+  border: 1px solid #d4d4d4;
+}
+
+.anno__focus {
+  position: absolute;
+  z-index: 2;
+  max-width: none;
+}
+
+.cs-subtitle--lg {
+  font-size: 1.125rem;
+}
+
+.cs-block--tight {
+  margin-top: 1.5rem;
+}
+
+/* 2 × 2 reflection cards are shorter than the 3-column ones */
+.cs-cards--2.cs-cards--reflection .cs-card {
+  min-height: 12.7rem;            /* 203px */
+}
+
+/* ----- Sender: tablet ----- */
+@media (max-width: 960px) {
+  .cs-overview--sender { grid-template-columns: 1fr; }
+
+  .cs-panel__grid { grid-template-columns: 1fr; gap: 2rem; }
+
+  .cs-options { grid-template-columns: 1fr; gap: 4rem; }
+  .cs-option__shot { width: 100%; }
+
+  .cs-iters { gap: 4rem 2.5rem; }
+
+  .anno__shot { order: 1; }
+
+  /* Steps wrap; the return connector isn't needed */
+  .xflow__row { flex-wrap: wrap; justify-content: flex-start; row-gap: 0.75rem; }
+  .xflow__turn { display: none; }
+  .xflow__row + .xflow__turn + .xflow__row { margin-top: 0.75rem; }
+}
+
+/* ----- Sender: phone ----- */
+@media (max-width: 640px) {
+  .cs-iters { grid-template-columns: 1fr; }
+
+  /* Existing flow becomes a vertical list */
+  .xflow__row { flex-direction: column; align-items: stretch; }
+  .xflow__row .navmap__node { text-align: center; }
+  .xflow__arrow { flex: 0 0 1.25rem; width: 1px; height: 1.25rem; margin: 0 auto; }
+  .xflow__arrow::after { top: auto; bottom: 0; right: -0.2rem; transform: rotate(135deg); }
+  .xflow__row + .xflow__turn + .xflow__row { margin-top: 0.5rem; }
+
+  .cs-option__title { font-size: 1.375rem; }
+  .cs-panel { padding: 1.5rem; }
+}
+
+/* =========================================================
+   Footer heading ("Got something worth complaining about?")
+   Sits at the top of the footer, close to the contact row.
+   ========================================================= */
+.footer__cta {
+  margin-bottom: 3.5rem;
+  text-align: center;
+}
+
+.footer__title {
+  font-size: 1.5rem;              /* 24px */
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--text-heading);
+}
+
+.footer__subtitle {
+  margin-top: 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 300;
+  color: #6b6b6b;
+}
+
+/* =========================================================
+   About: section titles, journey timeline, tools
+   ========================================================= */
+.about__section-title {
+  margin-bottom: 2.25rem;
+  font-size: 1.25rem;             /* 20px */
+  font-weight: 300;
+  color: var(--text-heading);
+}
+
+.journey {
+  margin-top: 12rem;
+}
+
+/* Desktop: a horizontal line with five points; "Now" gets a wider column for "Currently" */
+.journey__list {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) 1.8fr;   /* "Now" is wider so the Currently card has room */
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.journey__list::before {
+  content: "";
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  right: 0;
+  height: 1px;
+  background: #cfcfcf;
+}
+
+.journey__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 1.75rem;
+}
+
+/* The point on the line */
+.journey__item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--selected);
+  border-radius: 50%;
+}
+
+.journey__item--now::before {
+  background: var(--selected);
+}
+
+.journey__when {
+  font-size: 0.6875rem;           /* 11px */
+  font-weight: 300;
+  color: #8a8a8a;
+}
+
+.journey__what {
+  font-size: 0.8125rem;           /* 13px */
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--text-strong);
+}
+
+.journey__item--now .journey__what {
+  font-weight: 600;
+}
+
+/* The timeline points appear one after another */
+.js .journey__item.reveal:nth-child(2) { transition-delay: 0.12s; }
+.js .journey__item.reveal:nth-child(3) { transition-delay: 0.24s; }
+.js .journey__item.reveal:nth-child(4) { transition-delay: 0.36s; }
+.js .journey__item.reveal:nth-child(5) { transition-delay: 0.48s; }
+.js .journey__item.reveal:nth-child(6) { transition-delay: 0.6s; }
+
+/* "Currently" box under the Now point */
+.journey__currently {
+  margin-top: 1rem;
+  padding: 1rem 1.125rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.journey__currently-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: #8a8a8a;
+}
+
+.journey__currently-label::before {
+  content: "";
+  width: 0.43rem;
+  height: 0.43rem;
+  border-radius: 50%;
+  background: #90ea91;           /* same green as "Available for work" */
+}
+
+.journey__currently ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.35;
+  color: var(--text-strong);
+}
+
+/* Tools and skills chips */
+.tools {
+  margin-top: 10rem;
+}
+
+.tools__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tools__list li {
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.8125rem;           /* 13px */
+  font-weight: 300;
+  color: var(--text-muted);
+}
+
+/* ----- Tablet ----- */
+@media (max-width: 960px) {
+  .journey { margin-top: 8rem; }
+  .tools { margin-top: 7rem; }
+  .facts { margin-top: 8rem; }
+
+  .journey__list { grid-template-columns: repeat(2, 1fr); row-gap: 2rem; }
+  .journey__list::before { display: none; }
+  .journey__item--now { grid-column: 1 / -1; }
+}
+
+/* ----- Phone: vertical timeline ----- */
+@media (max-width: 640px) {
+  .footer__title { font-size: 1.375rem; }
+  .footer__cta { margin-bottom: 2.5rem; }
+
+  .journey__list {
+    grid-template-columns: 1fr;
+    row-gap: 1.75rem;
+    padding-left: 1.75rem;
+  }
+
+  .journey__list::before {
+    display: block;
+    top: 0.375rem;
+    bottom: 0;
+    left: 0.375rem;
+    right: auto;
+    width: 1px;
+    height: auto;
+  }
+
+  .journey__item { padding-top: 0; }
+  .journey__item::before { left: -1.75rem; top: 0.2rem; }
+}
+
+/* =========================================================
+   About: sticky notes ("Since you're already here...")
+   Positions come from Figma (912 × 690 board). Sizes use cqi so the
+   whole board scales with the page. Drag any note (js/main.js).
+   ========================================================= */
+.facts {
+  margin-top: 11rem;
+  overflow-x: clip;               /* rotated notes and shadows never cause sideways scrolling */
+}
+
+.facts__title {
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;             /* 20px, same as the other section titles */
+  font-weight: 300;
+  text-align: center;
+  color: var(--text-heading);     /* same as the other section titles */
+}
+
+.facts__board {
+  position: relative;
+  aspect-ratio: 912 / 690;
+  width: 78%;                     /* notes about 20% smaller than Figma */
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  container-type: inline-size;
+}
+
+.note {
+  --dx: 0px;                      /* drag offset, set while dragging */
+  --dy: 0px;
+  --s: 1;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: calc(var(--w) / 912 * 100cqi);
+  height: calc(var(--h) / 912 * 100cqi);
+  transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(var(--s));
+  cursor: grab;
+  touch-action: none;             /* lets fingers drag notes instead of scrolling */
+  user-select: none;
+  transition: transform 0.25s var(--ease-out), filter 0.25s ease;
+}
+
+.note:hover {
+  --s: 1.03;
+}
+
+.note.is-dragging {
+  --s: 1.07;
+  cursor: grabbing;
+  filter: drop-shadow(0 0.75rem 1.25rem rgba(0, 0, 0, 0.14));
+  transition: filter 0.25s ease;  /* follow the pointer without lag */
+}
+
+.note__paper {
+  position: absolute;
+  display: block;
+}
+
+.note__paper img {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  pointer-events: none;
+}
+
+.note__text {
+  position: absolute;
+  left: calc(50% + var(--tx));
+  top: calc(50% + var(--ty));
+  width: var(--tw);
+  transform: translate(-50%, -50%) rotate(var(--trot));
+  font-family: "Delicious Handrawn", cursive;
+  font-size: calc(var(--fs) / 912 * 100cqi);
+  line-height: var(--lh, normal);
+  text-align: center;
+  color: #000;
+  pointer-events: none;
+}
+
+/* Phones: notes sit in a loose two-column pile instead of the wide board */
+@media (max-width: 640px) {
+  /* Phones: the sticky notes are hidden (desktop and tablet only) */
+  .facts { display: none; }
+
+  .facts__board {
+    display: grid;
+    /* small notes, as many per row as fit (2–3), centered */
+    grid-template-columns: repeat(auto-fit, minmax(6.25rem, 7.5rem));
+    justify-content: center;
+    width: 100%;
+    gap: 0.25rem 0.625rem;
+    aspect-ratio: auto;
+  }
+
+  .note {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    transform: translate(var(--dx), var(--dy)) rotate(calc(var(--rot) * 0.5)) scale(var(--s));
+    touch-action: pan-y;          /* phones: swiping over notes scrolls the page (no dragging) */
+    cursor: auto;
+  }
+
+  /* Rows overlap a little, like a pile of notes */
+  .note:nth-child(n + 3) {
+    margin-top: -0.75rem;
+  }
+
+  .note__text {
+    font-size: calc(var(--fs) * 0.55px);
+  }
+}
+
+/* =========================================================
+   Home: sticky note in the hero
+   A small aside to the right of the hero text. It sticks on after
+   the hero has finished animating in, can be dragged around, and
+   leads to the notes on the About page when clicked.
+   ========================================================= */
+.hero {
+  position: relative;
+}
+
+.hero-note {
+  --dx: 0px;
+  --dy: 0px;
+  --s: 1;
+  position: absolute;
+  top: 46%;
+  left: calc(50% + 13rem);        /* in the empty space right of the hero text */
+  z-index: 2;
+  width: 7.5rem;
+  aspect-ratio: 184 / 182;
+  transform: translate(var(--dx), var(--dy)) rotate(14deg) scale(var(--s));
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: transform 0.25s var(--ease-out), filter 0.25s ease;
+  animation: note-stick 0.7s var(--ease-out) both;
+  animation-delay: 3.4s;          /* after the logo, text and navbar have risen in, so the text is read first */
+}
+
+.hero-note:hover {
+  --s: 1.05;
+}
+
+.hero-note.is-dragging {
+  --s: 1.08;
+  cursor: grabbing;
+  filter: drop-shadow(0 0.75rem 1.25rem rgba(0, 0, 0, 0.14));
+  transition: filter 0.25s ease;
+}
+
+.hero-note__text {
+  position: absolute;
+  inset: 18% 14% 22% 12%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-4deg);
+  font-family: "Delicious Handrawn", cursive;
+  font-size: 1.125rem;
+  line-height: 1.1;
+  text-align: center;
+  color: #000;
+  pointer-events: none;
+}
+
+/* "Sticks" onto the page: drops in slightly bigger, then presses flat */
+@keyframes note-stick {
+  0% {
+    opacity: 0;
+    scale: 1.25;
+    rotate: -6deg;
+  }
+  70% {
+    opacity: 1;
+    scale: 0.96;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+
+/* Tablet: a little smaller, closer to the text */
+@media (max-width: 960px) {
+  .hero-note {
+    left: auto;
+    right: var(--gutter);
+    top: 58%;
+    width: 6.5rem;
+  }
+
+  .hero-note__text { font-size: 1rem; }
+}
+
+/* Phones: hidden (the notes on About are desktop and tablet only) */
+@media (max-width: 640px) {
+  .hero-note {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-note { animation: none; }
+}
+
+/* =========================================================
+   Branding case study (case-study-template.html)
+   Same building blocks as the other case studies. Each project
+   sets --project and --project-accent on <body>.
+   ========================================================= */
+/* Branding pages are wider than the UI/UX ones (Figma: 1004px content on 1200px)
+   and sit on the light gray page */
+.page-case--brand {
+  --content-width: 62.75rem;
+  background: #f7f7f7;
+}
+
+.page-case--brand .cs {
+  --cs-purple: var(--project);
+  --cs-violet: var(--project);
+  --cs-card-bg: #f2f2f2;
+  --cs-card-border: var(--project-border, #d1d5dc);
+}
+
+.page-case--brand .cs-nav {
+  background: rgba(247, 247, 247, 0.94);
+}
+
+/* Desktop: ~224px between mockup groups, as in Figma */
+@media (min-width: 961px) {
+  .page-case--brand .cs { --cs-section: 14rem; }
+  .page-case--brand .cs-overview { margin-top: 3.8rem; }
+}
+
+/* Muted gray body text (Project Overview) */
+.cs-text--muted {
+  color: #555;
+}
+
+/* ----- Hero: photo with the brand color over it, logo + tagline centered ----- */
+.brand-hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 2.25rem 0 0;
+  overflow: hidden;
+  aspect-ratio: 1007 / 548;
+  border-radius: 1rem;
+  background: var(--project);
+  container-type: inline-size;    /* logo and tagline scale with the photo */
+}
+
+/* Figma: photo scaled to 124%, pinned to the top-left corner */
+.brand-hero__photo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 124.17%;
+  max-width: none;
+  height: 124.51%;
+  object-fit: cover;
+}
+
+/* Brand color tint (rgba(19, 57, 29, 0.49) for Invitro) */
+.brand-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--project);
+  opacity: 0.49;
+}
+
+.brand-hero__mark {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.12cqi;                   /* 11.3px at 1007px */
+  width: 32.5%;                   /* 327 / 1007 */
+  margin-top: 2%;
+  font-size: max(1.73cqi, 0.625rem);   /* 17.4px at 1007px, never under 10px */
+  white-space: nowrap;
+  color: #fff;
+  text-align: center;
+}
+
+.brand-hero__mark img {
+  width: 100%;
+}
+
+/* The same hero used as a project's cover on Home */
+.brand-hero--card {
+  height: 100%;
+  margin: 0;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+
+/* ----- Hero banner: a plain image cropped to 1004 × 548 ----- */
+.brand-banner {
+  display: block;
+  width: 100%;
+  margin-top: 2.25rem;
+  aspect-ratio: 1004 / 548;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+/* Full-width photo in its own proportions */
+.brand-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+
+/* ----- Two posters side by side, a little narrower than the page ----- */
+.cs-gallery.brand-pair {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.0625rem;                 /* 33px */
+  width: 90.2%;                   /* 906 / 1004 */
+  margin-inline: auto;
+}
+
+.brand-pair img {
+  border-radius: 0;
+}
+
+/* =========================================================
+   Typeface case study (metropoline.html)
+   ========================================================= */
+/* The typeface itself, for the "Try it yourself" box: one family per version.
+   The browser only downloads a version once it's picked. */
+@font-face { font-family: "Metropoline1"; src: url("../assets/metropoline/Metropoline1-Regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Metropoline2"; src: url("../assets/metropoline/Metropoline2-Regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Metropoline3"; src: url("../assets/metropoline/Metropoline3-Regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Metropoline4"; src: url("../assets/metropoline/Metropoline4-Regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Metropoline5"; src: url("../assets/metropoline/Metropoline5-Regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Metropoline6"; src: url("../assets/metropoline/Metropoline6-Regular.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Metropoline7"; src: url("../assets/metropoline/Metropoline7-Regular.otf") format("opentype"); font-display: swap; }
+
+/* Smaller section titles (Font versions, Try it yourself, Posters...) */
+.brand-h3 {
+  margin-bottom: 1.875rem;
+  font-size: 1.25rem;             /* 20px */
+  font-weight: 600;
+  line-height: normal;
+}
+
+/* ----- Hero: the animated wordmark in a light box (Figma: 1004 × 548) ----- */
+.type-hero {
+  margin: 2.25rem 0 0;
+  overflow: hidden;
+  aspect-ratio: 1004 / 548;
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+}
+
+/* The GIF is on white: multiply turns its white into the box's gray */
+.type-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+}
+
+/* ----- Sketches ← the lettering on the old map ----- */
+.type-origin {
+  display: grid;
+  grid-template-columns: 40.5% 1fr 47.8%;   /* 407px | arrow | 480px */
+  align-items: center;
+}
+
+.type-origin__sketches {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.type-origin__sketches img,
+.type-origin__map {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.type-origin__arrow,
+.type-step span {
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1;
+  color: #8a8a8a;
+  text-align: center;
+}
+
+/* "↓ Vector version" */
+.type-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 5.5rem 0 1.75rem;
+  font-size: 1.125rem;
+  font-weight: 300;
+  color: #555;
+}
+
+.type-vector {
+  border-radius: 0;
+}
+
+/* ----- Font versions: a dark band across the whole page ----- */
+.cs--before-band {
+  padding-bottom: var(--cs-section);
+}
+
+.cs--after-band {
+  padding-top: var(--cs-section);
+}
+
+.type-band {
+  padding-block: 5.75rem 6.5rem;  /* Figma: ~92px above, ~104px below */
+  background: #231f20;
+  color: #fff;
+}
+
+.type-band .brand-h3 {
+  margin-bottom: 4.5rem;          /* Figma: more room between the title and the letters */
+}
+
+.type-band__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ----- Try it yourself: a toolbar over a white writing sheet -----
+   The toolbar sets these variables (js/main.js). Each page names its font:
+   --version is the font shown, --fallback fills in letters it doesn't have.
+   (Defaults are Metropoline's; dracula.html sets its own on the section.) */
+.type-tester {
+  --size: 96px;
+  --spacing: 0em;
+  --leading: 1.1;
+  --version: "Metropoline1";
+  --fallback: "Metropoline1";
+}
+
+/* One compact toolbar: version, size, spacing, line height */
+.type-tester__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2rem;
+  padding: 0.75rem 1.25rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+}
+
+.type-tester__control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.type-tester__control select {
+  padding: 0.3rem 0.5rem;
+  background: #f2f2f2;
+  border: 0;
+  border-radius: 0.5rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Slider: a thin black line with a round black knob */
+.type-tester__control input {
+  width: 7rem;
+  height: 1rem;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.type-tester__control input::-webkit-slider-runnable-track {
+  height: 1px;
+  background: #000;
+}
+
+.type-tester__control input::-moz-range-track {
+  height: 1px;
+  background: #000;
+}
+
+.type-tester__control input::-webkit-slider-thumb {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-top: -0.35rem;
+  background: #000;
+  border: 0;
+  border-radius: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.type-tester__control input::-moz-range-thumb {
+  width: 0.75rem;
+  height: 0.75rem;
+  background: #000;
+  border: 0;
+  border-radius: 50%;
+}
+
+.type-tester__control input:focus-visible,
+.type-tester__control select:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 4px;
+}
+
+/* The sheet: a white card */
+.type-tester__sheet {
+  margin-top: 1.25rem;
+  padding: 3rem 2.5rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.type-tester__text {
+  min-height: 12rem;
+  outline: none;
+  overflow-wrap: anywhere;
+  /* Letters a version doesn't have (Metropoline 06 and 07 are partial) come from --fallback */
+  font-family: var(--version), var(--fallback), var(--font-sans);
+  font-size: var(--size);
+  letter-spacing: var(--spacing);
+  line-height: var(--leading);
+  color: #000;
+}
+
+/* "Type" hint when the box is empty */
+.type-tester__text:empty::before {
+  content: attr(data-placeholder);
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: #ccc;
+}
+
+.type-tester__sheet:focus-within {
+  border-color: #000;
+}
+
+.type-posters {
+  border-radius: 0;
+}
+
+@media (max-width: 640px) {
+  .type-origin {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .type-origin__arrow { transform: rotate(-90deg); }   /* points up to the sketches */
+
+  .type-step { margin-top: 3rem; }
+
+  .type-band { padding-block: 3.5rem; }
+
+  /* Smaller starting size; the Size slider picks this up (js/main.js) */
+  .type-tester { --size: 48px; }
+
+  /* Toolbar becomes a rounded box: one control per row, sliders stretch */
+  .type-tester__bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.875rem;
+    padding: 1rem 1.25rem;
+    border-radius: 1rem;
+  }
+
+  .type-tester__control { justify-content: space-between; }
+  .type-tester__control input { flex: 1; width: auto; max-width: 14rem; }
+
+  .type-tester__sheet { padding: 1.5rem 1.25rem; }
+
+  .type-tester__text { min-height: 8rem; }
+}
+
+/* =========================================================
+   Dracula (dracula.html), on top of the typeface pieces above
+   ========================================================= */
+@font-face {
+  font-family: "Dracula";
+  src: url("../assets/Dracula/Dracula_regular_2.otf") format("opentype");
+  font-display: swap;
+}
+
+/* Centered caption under an image ("The original poster", "First sketches") */
+.type-caption {
+  margin-top: 1.25rem;
+  font-size: 1.125rem;
+  font-weight: 300;
+  text-align: center;
+}
+
+.type-figure,
+.type-source {
+  margin: 0;
+}
+
+/* ----- The original poster, its title lettering marked in orange ----- */
+.type-source__poster {
+  position: relative;
+  width: 41.2%;                   /* 414 / 1004 */
+  margin-inline: auto;
+}
+
+.type-source__poster img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.type-source__mark {
+  position: absolute;
+  top: 9.3%;
+  left: 1.2%;
+  width: 79.7%;
+  height: 12.3%;
+  border: 2px solid #ff9500;
+}
+
+/* "The original font ←" to the left of the poster, level with the mark */
+.type-source__label {
+  position: absolute;
+  top: 15.4%;
+  right: calc(98.8% + 0.5rem);    /* 8px from the orange frame (which starts 1.2% into the poster) */
+  font-size: 1.125rem;
+  font-weight: 300;
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+
+.type-source__label span {
+  margin-left: 0.4rem;
+  color: #ff9500;
+}
+
+/* ----- Sketch collage: sheets placed and tilted by --x, --y, --w, --r ----- */
+.type-collage {
+  position: relative;
+  width: 86.7%;                   /* 870 / 1004 */
+  margin-inline: auto;
+  aspect-ratio: 870 / 1080;
+}
+
+.type-collage img {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: var(--w);
+  height: auto;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+  transform: rotate(var(--r));
+}
+
+/* ----- The alphabet in the font, with its name ----- */
+.type-alphabet {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2.25rem;
+  padding-top: 6.25rem;           /* Figma: ~100px under the line */
+  border-top: 1px solid #8a8a8a;
+}
+
+.type-alphabet__letters {
+  font-family: "Dracula", var(--font-sans);
+  font-size: 3rem;
+  line-height: 1.1;
+  color: #393939;
+  text-align: right;
+}
+
+.type-alphabet__name {
+  font-size: 1.375rem;
+}
+
+@media (max-width: 640px) {
+  .type-source__poster { width: 70%; }
+
+  /* Label moves under the poster, its arrow pointing up */
+  .type-source__label {
+    position: static;
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 1rem;
+    transform: none;
+  }
+
+  .type-source__label span { display: inline-block; transform: rotate(-90deg); }
+
+  .type-collage { width: 100%; }
+
+  .type-alphabet {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding-top: 3rem;
+  }
+
+  /* The alphabet is one long "word": let it wrap onto more lines */
+  .type-alphabet__letters { font-size: 2rem; overflow-wrap: anywhere; }
+}
+
+/* =========================================================
+   Aria Festival (aria.html)
+   ========================================================= */
+/* This frame keeps the image rows closer together (~140px) */
+.cs.cs--tight {
+  --cs-section: 9rem;
+}
+
+/* Full-width photo cropped to the Figma frame's proportions (--ar) */
+.brand-photo--crop {
+  aspect-ratio: var(--ar);
+  object-fit: cover;
+}
+
+/* Two images side by side, same height (Figma: 540 | 425, 39px gap) */
+.brand-duo {
+  display: grid;
+  grid-template-columns: 540fr 425fr;
+  grid-template-rows: minmax(0, 1fr);   /* the row height comes from the aspect ratio, not the images */
+  gap: 2.4375rem;
+  aspect-ratio: 1004 / 530;
+}
+
+.brand-duo img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+/* ----- Video: plays by itself on a loop, no sound or controls ----- */
+.brand-video {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1004 / 548;
+  background: #000;
+  border-radius: 1rem;
+}
+
+.brand-video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 640px) {
+  /* Stack the pair; each image keeps its own shape */
+  .brand-duo {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: 0.75rem;
+    aspect-ratio: auto;
+  }
+
+  .brand-duo img { height: auto; }
+}
+
+/* ----- Square social post mockup, centered (Figma: 713px) ----- */
+.brand-post {
+  width: 71%;                     /* 713 / 1004 */
+  margin-inline: auto;
+}
+
+/* ----- Project overview: 540px text + 292px facts card ----- */
+.cs-overview--brand {
+  grid-template-columns: minmax(0, 33.75rem) 18.25rem;
+  margin-top: 3.8rem;
+}
+
+.cs-overview--brand .cs-h2 {
+  margin: 0 0 1.875rem;
+}
+
+.cs-overview--brand .cs-facts {
+  margin-top: 4.5rem;             /* lines up with the paragraph, as in Figma */
+  color: var(--project);
+}
+
+.cs-overview--brand .cs-facts dt { font-weight: 400; color: var(--facts-label, inherit); }
+.cs-overview--brand .cs-facts dd { color: var(--facts-value, inherit); }
+
+/* ----- Mockup images ----- */
+.page-case--brand .cs-gallery--2,
+.page-case--brand .cs-gallery--3 { gap: 1.5rem; }   /* 24px, as in Figma */
+
+.cs-gallery--4 { grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+
+/* Images keep their own proportions, with a light border */
+.cs-gallery--framed img {
+  height: auto;
+  border: 1px solid #d9d9d9;
+}
+
+/* Free-standing mockups with no box around them */
+.brand-wide,
+.brand-narrow {
+  display: block;
+  width: 100%;
+}
+
+.brand-narrow {
+  width: 89%;                     /* 893 / 1004 */
+  margin-inline: auto;
+}
+
+/* Figma leaves extra room above and below the bottles */
+section:has(> .brand-narrow) {
+  padding-block: 1.25rem;
+}
+
+/* Tablet and phones: facts card goes under the text */
+@media (max-width: 960px) {
+  .cs-overview--brand { grid-template-columns: 1fr; gap: 0; }
+  .cs-overview--brand .cs-facts { max-width: 18.25rem; margin-top: 2rem; }
+}
+
+@media (max-width: 640px) {
+  .cs-gallery--4 { grid-template-columns: repeat(2, 1fr); }
+  .brand-narrow { width: 100%; }
+  .page-case--brand .cs-gallery--2,
+  .page-case--brand .cs-gallery--3,
+  .cs-gallery.brand-pair { gap: 0.75rem; }
+  .cs-gallery.brand-pair { width: 100%; }
+  .page-case--brand .cs-gallery--3 { grid-template-columns: repeat(3, 1fr); }   /* 3 signs stay in a row */
+
+  .brand-post { width: 100%; }
+}
+
+/* No width limit: long titles (e.g. Hand Made Japan) stay on one line on desktop */
+.cs-title--brand {
+  max-width: none;
+  color: var(--project);
+}
+
+/* ----- Image placeholder (remove once the real image is in) ----- */
+.ph {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: var(--ar, 16 / 9);
+  padding: 1rem;
+  background: #f3f3f3;
+  border: 1px dashed #c4c4c4;
+  border-radius: 1rem;
+  font-family: var(--font-alt);
+  font-size: 0.8125rem;
+  color: #8a8a8a;
+  text-align: center;
+}
+
+.ph--dark  { background: #272727; border-color: #272727; color: #bdbdbd; }
+.ph--brand { background: var(--project); border-color: var(--project); color: #fff; }
+
+/* ----- Image galleries ----- */
+.cs-gallery {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cs-gallery--2 { grid-template-columns: repeat(2, 1fr); }
+.cs-gallery--3 { grid-template-columns: repeat(3, 1fr); }
+
+/* Wide image next to a tall one, same height */
+.cs-gallery--wide-tall { grid-template-columns: 2fr 1fr; }
+
+.cs-gallery li {
+  min-width: 0;
+}
+
+.cs-gallery img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.cs-shot > .ph + figcaption,
+.cs-shot > img + figcaption {
+  margin-top: 0.75rem;
+}
+
+/* ----- Type specimens ----- */
+.cs-type {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.cs-type__item {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 2rem 2.5rem;
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-card-border);
+  border-radius: 1rem;
+}
+
+.cs-type__sample {
+  font-size: 7rem;
+  line-height: 1;
+  color: var(--project);
+}
+
+.cs-type__name {
+  font-size: 1.375rem;
+  font-weight: 600;
+}
+
+.cs-type__use {
+  margin-top: 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 300;
+  color: var(--selected);
+}
+
+.cs-type__glyphs {
+  margin-top: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+
+/* ----- Color palette ----- */
+.cs-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cs-swatch {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  aspect-ratio: 3 / 4;
+  padding: 1.25rem;
+  background: var(--swatch);
+  border-radius: 1rem;
+  color: #fff;
+}
+
+.cs-swatch--light {
+  border: 1px solid var(--cs-card-border);
+  color: var(--text-strong);
+}
+
+.cs-swatch__name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.cs-swatch__code {
+  font-family: var(--font-alt);
+  font-size: 0.8125rem;
+  opacity: 0.8;
+}
+
+/* ----- Next project link ----- */
+.cs-next {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: var(--cs-section);
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.cs-next__label {
+  font-family: var(--font-alt);
+  font-size: 0.875rem;
+  color: var(--selected);
+}
+
+.cs-next__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2.1875rem;
+  color: var(--project);
+  transition: opacity 0.2s ease;
+}
+
+.cs-next__link:hover {
+  opacity: 0.65;
+}
+
+.cs-next__link .btn-pill__arrow {
+  width: 1rem;
+}
+
+@media (max-width: 640px) {
+  .cs-gallery { gap: 0.75rem; }
+  .cs-gallery--3 { grid-template-columns: repeat(2, 1fr); }
+  .cs-gallery--wide-tall { grid-template-columns: 1fr; }
+  .cs-gallery--wide-tall .ph { aspect-ratio: 4 / 3; height: auto; }
+
+  .cs-type__item {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .cs-type__sample { font-size: 4.5rem; }
+
+  .cs-palette { grid-template-columns: repeat(2, 1fr); }
+
+  .cs-next__link { font-size: 1.75rem; }
+}

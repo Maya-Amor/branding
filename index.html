@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <title>Maya Amor | Brand Designer</title>
+  <meta name="description" content="Maya Amor, Brand Designer. Branding, visual identity and typography case studies.">
+
+  <!-- Link preview (LinkedIn, WhatsApp, etc.)
+       TODO: add og:image (1200 × 630) once the preview image is made -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Maya Amor">
+  <meta property="og:title" content="Maya Amor | Brand Designer">
+  <meta property="og:description" content="Maya Amor, Brand Designer. Branding, visual identity and typography case studies.">
+  <meta property="og:url" content="https://maya-amor.github.io/branding/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://maya-amor.github.io/branding/">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&family=Google+Sans+Flex:wght@300..700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Lets CSS know JavaScript is on, so scroll animations only hide content when they can reveal it -->
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body class="page-home">
+
+  <!-- ===== Sticky header =====
+       On Home (site-header--home) the logo and navbar start inside the hero
+       and travel up into this header as you scroll (see js/main.js).
+       On the other pages it simply sits at the top. -->
+  <header class="site-header site-header--home">
+
+    <a class="site-header__logo" href="#top" aria-label="Maya Amor, back to top">
+      <img src="assets/icons/logo.svg" alt="" width="46" height="56">
+    </a>
+
+    <button class="site-header__menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="site-header__nav" id="site-nav">
+      <nav class="pill-nav" aria-label="Main">
+        <a class="pill-nav__link" href="#projects">My projects</a>
+        <a class="pill-nav__link" href="about.html">About</a>
+        <a class="pill-nav__link" href="#contact">Let’s Talk</a>
+        <a class="pill-nav__link" href="assets/Maya%20Amor%20Resume.pdf" target="_blank" rel="noopener">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== Hero =====
+       The logo and navbar here mark the starting spots. On desktop/tablet they're
+       invisible and the header's copies are drawn on top of them; on phones these
+       are the ones you see. -->
+  <section class="hero container">
+    <img class="hero__logo-slot" src="assets/icons/logo.svg" alt="" width="46" height="56">
+
+    <div class="hero__text">
+      <h1 class="hero__title">Hi, I’m Maya</h1>
+      <p class="hero__bio">
+        Unfortunately, I'm not Polish. <br class="br-mobile">I just have a natural <br>talent for finding things to complain about.
+      </p>
+      <p class="hero__bio">So I became a Brand Designer..</p>
+    </div>
+
+    <nav class="hero__nav-slot pill-nav" aria-label="Main">
+      <a class="pill-nav__link" href="#projects">My projects</a>
+      <a class="pill-nav__link" href="about.html">About</a>
+      <a class="pill-nav__link" href="#contact">Let’s Talk</a>
+      <a class="pill-nav__link" href="assets/Maya%20Amor%20Resume.pdf" target="_blank" rel="noopener">Resume</a>
+    </nav>
+
+    <!-- Phones: the menu button starts here, centered, then travels to the top-right -->
+    <div class="hero__menu-slot" aria-hidden="true"></div>
+
+    <!-- Sticky note: a quiet aside that leads to the notes on the About page (drag it, or click to go) -->
+    <a class="hero-note" href="about.html#facts">
+      <i class="note__paper" style="inset:-12.73% -19.02% -17.64% -12.59%"><img src="assets/about/notes/note-4.svg" alt="" draggable="false"></i>
+      <span class="hero-note__text">Things that aren’t on my CV →</span>
+    </a>
+  </section>
+
+  <main>
+    <!-- ===== Intro to projects ===== -->
+    <section class="intro container">
+      <a class="intro__link" href="#projects">
+        <span>Okay, enough about me. Let's look at the brands I couldn't leave alone</span>
+        <img src="assets/icons/arrow-down.svg" alt="" width="16" height="17">
+      </a>
+    </section>
+
+    <!-- ===== Projects =====
+         Each card has its own background color (--card).
+         Until a project's cover is ready, the card shows the project name
+         (project__card--empty). When the cover is ready, replace the
+         <span class="project__placeholder"> with:
+           <img class="project__cover" src="assets/<project>/cover.jpg" alt="..." width="1824" height="1000">
+         and remove project__card--empty. Covers are 912 × 500 (or 2× that). -->
+    <section id="projects" class="projects container" aria-label="My projects">
+
+      <article class="project" style="--card:#1f391e; --label:#1f391e; --project:#1f391e">
+        <div class="project__header">
+          <div class="project__heading">
+            <p class="project__label">Invitro</p>
+            <h2 class="project__title">Next gen lab grown tea</h2>
+          </div>
+          <a class="btn-pill" href="invitro.html">
+            View Project
+            <img class="btn-pill__arrow" src="assets/icons/arrow-right.svg" alt="" width="13" height="18">
+          </a>
+        </div>
+
+        <!-- Cover: the case study's hero (photo + green tint + logo) -->
+        <a class="project__card" href="invitro.html" aria-label="View the Invitro project">
+          <span class="project__cover brand-hero brand-hero--card">
+            <img class="brand-hero__photo" src="assets/invitro/hero.jpg" alt="" width="1408" height="768">
+            <span class="brand-hero__mark">
+              <img src="assets/invitro/logo.svg" alt="" width="328" height="68">
+              <span>Next gen lab grown tea</span>
+            </span>
+          </span>
+        </a>
+
+        <ul class="tags" aria-label="Tags">
+          <li class="tag">Branding</li>
+          <li class="tag">Packaging</li>
+        </ul>
+      </article>
+
+      <article class="project" style="--card:#28316c; --label:#28316c">
+        <div class="project__header">
+          <div class="project__heading">
+            <p class="project__label">Tikotin</p>
+            <h2 class="project__title">Hand Made Japan</h2>
+          </div>
+          <a class="btn-pill" href="tikotin.html">
+            View Project
+            <img class="btn-pill__arrow" src="assets/icons/arrow-right.svg" alt="" width="13" height="18">
+          </a>
+        </div>
+
+        <a class="project__card" href="tikotin.html" aria-label="View the Hand Made Japan project">
+          <img class="project__cover" src="assets/tikotin/hero.jpg" alt="The Hand Made Japan exhibition identity on an indigo shoji grid" width="2000" height="970">
+        </a>
+
+        <ul class="tags" aria-label="Tags">
+          <li class="tag">Branding</li>
+          <li class="tag">Exhibition</li>
+        </ul>
+      </article>
+
+      <article class="project" style="--card:#1a0f24; --label:#6733d6">
+        <div class="project__header">
+          <div class="project__heading">
+            <p class="project__label">Aria Festival</p>
+            <h2 class="project__title">Branding for a summer music festival in Eilat</h2>
+          </div>
+          <a class="btn-pill" href="aria.html">
+            View Project
+            <img class="btn-pill__arrow" src="assets/icons/arrow-right.svg" alt="" width="13" height="18">
+          </a>
+        </div>
+
+        <a class="project__card" href="aria.html" aria-label="View the Aria Festival project">
+          <img class="project__cover" src="assets/aria%20festival/hero%20photo.jpg" alt="The chrome Aria festival 2026 logo over a dark night scene with a disco ball in a pool" width="2008" height="1095">
+        </a>
+
+        <ul class="tags" aria-label="Tags">
+          <li class="tag">Branding</li>
+          <li class="tag">Festival</li>
+        </ul>
+      </article>
+
+      <article class="project" style="--card:#fff; --label:#000">
+        <div class="project__header">
+          <div class="project__heading">
+            <p class="project__label">Metropoline</p>
+            <h2 class="project__title">Hebrew typeface inspired by Haifa</h2>
+          </div>
+          <a class="btn-pill" href="metropoline.html">
+            View Project
+            <img class="btn-pill__arrow" src="assets/icons/arrow-right.svg" alt="" width="13" height="18">
+          </a>
+        </div>
+
+        <!-- Cover: the animated wordmark from the case study's hero -->
+        <a class="project__card project__card--outlined" href="metropoline.html" aria-label="View the Metropoline project">
+          <img class="project__cover" src="assets/metropoline/metropoline%20gif.gif" alt="" width="1920" height="1080">
+        </a>
+
+        <ul class="tags" aria-label="Tags">
+          <li class="tag">Typeface</li>
+          <li class="tag">Typography</li>
+        </ul>
+      </article>
+
+      <article class="project" style="--card:#000; --label:#000">
+        <div class="project__header">
+          <div class="project__heading">
+            <p class="project__label">Dracula</p>
+            <h2 class="project__title">Hebrew typeface inspired by a 60s poster</h2>
+          </div>
+          <a class="btn-pill" href="dracula.html">
+            View Project
+            <img class="btn-pill__arrow" src="assets/icons/arrow-right.svg" alt="" width="13" height="18">
+          </a>
+        </div>
+
+        <a class="project__card" href="dracula.html" aria-label="View the Dracula project">
+          <img class="project__cover" src="assets/Dracula/hero%20photo.png" alt="The Dracula typeface in orange on black" width="2009" height="1093">
+        </a>
+
+        <ul class="tags" aria-label="Tags">
+          <li class="tag">Typeface</li>
+          <li class="tag">Typography</li>
+        </ul>
+      </article>
+
+      <!-- From the UI/UX portfolio: same card as there (screenshot on orange) -->
+      <article class="project" style="--card:#ff8834; --label:#f57538">
+        <div class="project__header">
+          <div class="project__heading">
+            <p class="project__label">Sender</p>
+            <h2 class="project__title">What if marketing could be persuasive <br class="br-desktop">without being manipulative?</h2>
+          </div>
+          <a class="btn-pill" href="sender.html">
+            View Project
+            <img class="btn-pill__arrow" src="assets/icons/arrow-right.svg" alt="" width="13" height="18">
+          </a>
+        </div>
+
+        <a class="project__card" href="sender.html" aria-label="View the Sender project">
+          <img class="project__screen" src="assets/sender/home-screen.png"
+               alt="Sender's Create SMS campaign screen with a phone message preview"
+               width="1920" height="1137">
+        </a>
+
+        <ul class="tags" aria-label="Tags">
+          <li class="tag">UI/UX</li>
+          <li class="tag">Digital Marketing</li>
+        </ul>
+      </article>
+
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer id="contact" class="footer">
+    <!-- Closing line: the top of the footer -->
+    <div class="footer__cta container reveal">
+      <h2 class="footer__title">Got something worth<br>complaining about?</h2>
+      <p class="footer__subtitle">I'm open to brand design roles and collaborations.</p>
+    </div>
+
+    <div class="footer__inner container">
+      <p class="footer__copy">Maya Amor | All Rights Reserved ©</p>
+
+      <div class="footer__contact">
+        <span>Maya4085@gmail.com</span>
+        <span>052-2256403</span>
+      </div>
+
+      <div class="footer__actions">
+        <nav class="pill-nav pill-nav--footer" aria-label="External links">
+          <a class="pill-nav__link" href="assets/Maya%20Amor%20Resume.pdf" target="_blank" rel="noopener">Resume</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating back-to-top button, appears once you start scrolling -->
+  <a class="back-to-top" href="#top" aria-label="Back to top">
+    <img src="assets/icons/back-to-top.svg" alt="" width="47" height="47">
+  </a>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

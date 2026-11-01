@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <title>About | Maya Amor</title>
+  <meta name="description" content="About Maya Amor, a brand designer who started freelancing at 21 and has been giving brands their look ever since.">
+
+  <!-- Link preview (LinkedIn, WhatsApp, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Maya Amor">
+  <meta property="og:title" content="About | Maya Amor">
+  <meta property="og:description" content="About Maya Amor, a brand designer who started freelancing at 21 and has been giving brands their look ever since.">
+  <meta property="og:url" content="https://maya-amor.github.io/branding/about.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://maya-amor.github.io/branding/about.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&family=Google+Sans+Flex:wght@300..700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Lets CSS know JavaScript is on, so scroll animations only hide content when they can reveal it -->
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+  <!-- ===== Sticky header (already docked on this page) ===== -->
+  <header class="site-header">
+
+    <a class="site-header__logo" href="index.html" aria-label="Maya Amor, home">
+      <img src="assets/icons/logo.svg" alt="" width="46" height="56">
+    </a>
+
+    <button class="site-header__menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="site-header__nav" id="site-nav">
+      <nav class="pill-nav" aria-label="Main">
+        <a class="pill-nav__link" href="index.html#projects">My projects</a>
+        <a class="pill-nav__link" href="about.html" aria-current="page">About</a>
+        <a class="pill-nav__link" href="#contact">Let’s Talk</a>
+        <a class="pill-nav__link" href="assets/Maya%20Amor%20Resume.pdf" target="_blank" rel="noopener">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="about container">
+
+    <!-- ===== Intro ===== -->
+    <div class="about__intro">
+      <h1 class="about__title">So, who is the person behind all the complaining?</h1>
+      <div class="about__meta">
+        <span class="about__name">Maya Amor</span>
+        <span class="about__status">Available for work</span>
+      </div>
+    </div>
+
+    <!-- ===== Photo + story ===== -->
+    <div class="about__body">
+      <div class="about__photo reveal">
+        <img src="assets/Photo%20of%20myself%20for%20about%20section.jpeg"
+             alt="Maya Amor smiling, with long curly hair and a black t-shirt, standing outdoors"
+             width="768" height="1024">
+      </div>
+
+      <div class="about__story reveal">
+        <div class="about__tabs" role="tablist" aria-label="About me">
+          <button class="about__tab" type="button" role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="true">I didn’t exactly plan this</button>
+          <button class="about__tab" type="button" role="tab" id="tab-enough" aria-controls="panel-enough" aria-selected="false" tabindex="-1">“good enough” is not enough</button>
+          <button class="about__tab" type="button" role="tab" id="tab-letters" aria-controls="panel-letters" aria-selected="false" tabindex="-1">I have strong feelings about letters</button>
+          <button class="about__tab" type="button" role="tab" id="tab-sketch" aria-controls="panel-sketch" aria-selected="false" tabindex="-1">I rarely start on the computer</button>
+        </div>
+
+        <div class="about__panels">
+        <div class="about__panel" role="tabpanel" id="panel-plan" aria-labelledby="tab-plan">
+          <p>After serving as a graphic designer in the IDF Education Corps, I was looking for a temporary job and started freelancing at 21. Apparently, I thought running a business was a reasonable thing to do at that age..</p>
+          <p>One project led to another, then advertising agencies started reaching out. Soon enough, I was working with big clients such as Reason Y (Planetanya, Moked Emun) and SCA (Padani, Soft Touch).</p>
+          <p>Logos, packaging, campaigns, print. Eventually I went to university to study Visual Communication at the University of Haifa (previously WIZO), to understand the “why” behind the things I was already doing.</p>
+          <p class="about__highlight">What I enjoy most hasn’t changed since day one: taking something that doesn’t have a face yet, and giving it one.</p>
+        </div>
+
+        <div class="about__panel" role="tabpanel" id="panel-enough" aria-labelledby="tab-enough" hidden>
+          <p>I've never been particularly good at looking at something and thinking, “Well, that's just how it is.”</p>
+          <p>If something doesn't make sense, I want to know why. If something could work better, I'll probably notice it. And if something is 2px off...</p>
+          <p>Well.</p>
+          <p class="about__highlight">Unfortunately, I will notice that too.</p>
+        </div>
+
+        <div class="about__panel" role="tabpanel" id="panel-letters" aria-labelledby="tab-letters" hidden>
+          <p>Some people notice faces. I notice fonts.</p>
+          <p>On menus, on street signs, on the back of a shampoo bottle. A typeface can make a brand feel warm, serious, cheap or expensive before anyone reads a single word.</p>
+          <p>At some point, choosing fonts wasn’t enough, so I designed my own.</p>
+          <p class="about__highlight">Every letter has a personality. Getting them to work together is the fun part.</p>
+        </div>
+
+        <div class="about__panel" role="tabpanel" id="panel-sketch" aria-labelledby="tab-sketch" hidden>
+          <p>Before I design anything, I need to understand what I’m looking at.</p>
+          <p>Who the brand is. Who it’s talking to. What everyone else in the field looks like. What it should never look like.</p>
+          <p>Sometimes that means research. Sometimes it means a moodboard. Most of the time it means a pencil and a lot of very ugly first sketches.</p>
+          <p class="about__highlight">Illustrator comes later.</p>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Journey timeline (the last point holds "Currently") ===== -->
+    <section class="journey" aria-labelledby="journey-title">
+      <h2 class="about__section-title reveal" id="journey-title">How I got here</h2>
+      <ol class="journey__list">
+        <li class="journey__item reveal">
+          <span class="journey__when">Army service</span>
+          <span class="journey__what">Graphic designer, IDF Education Corps</span>
+        </li>
+        <li class="journey__item reveal">
+          <span class="journey__when">At 21</span>
+          <span class="journey__what">Started freelancing</span>
+        </li>
+        <li class="journey__item reveal">
+          <span class="journey__when">Agencies</span>
+          <span class="journey__what">Working with Reason Y and SCA</span>
+        </li>
+        <li class="journey__item reveal">
+          <span class="journey__when">University</span>
+          <span class="journey__what">Visual Communication, University of Haifa</span>
+        </li>
+        <li class="journey__item reveal">
+          <span class="journey__when">While studying</span>
+          <span class="journey__what">Product designer at Rounds</span>
+        </li>
+        <li class="journey__item journey__item--now reveal">
+          <span class="journey__when">Now</span>
+          <span class="journey__what">Brand Designer</span>
+          <!-- Placeholder lines: replace with what you're up to -->
+          <div class="journey__currently">
+            <p class="journey__currently-label">Currently</p>
+            <ul>
+              <li>Looking for my next adventure</li>
+              <li>Noticing every badly kerned sign around me</li>
+            </ul>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ===== Tools and skills ===== -->
+    <section class="tools reveal" aria-labelledby="tools-title">
+      <h2 class="about__section-title" id="tools-title">What I work with</h2>
+      <ul class="tools__list">
+        <li>Illustrator</li>
+        <li>Photoshop</li>
+        <li>InDesign</li>
+        <li>Affinity</li>
+        <li>Figma</li>
+        <li>Claude</li>
+        <li>Gemini</li>
+        <li>ChatGPT</li>
+      </ul>
+    </section>
+
+    <!-- ===== Sticky notes: random facts (drag them around) ===== -->
+    <section class="facts" id="facts" aria-labelledby="facts-title">
+      <h2 class="facts__title reveal" id="facts-title">When I’m not designing..</h2>
+      <ul class="facts__board reveal" aria-label="Random facts about me">
+        <li class="note" style="--x:16.96%; --y:25.07%; --w:173.28; --h:168.28; --rot:-11.11deg">
+          <i class="note__paper" style="inset:-13.71% -20.63% -21.75% -13.31%"><img src="assets/about/notes/note-1.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:-0.81%; --ty:-1.81%; --trot:-6.94deg; --fs:22; --tw:59.79%">Spots a typo from across the room.</span>
+        </li>
+        <li class="note" style="--x:54.28%; --y:15.35%; --w:187.6; --h:185.58; --rot:1.49deg">
+          <i class="note__paper" style="inset:-12.49% -18.65% -17.26% -12.36%"><img src="assets/about/notes/note-2.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:-0.12%; --ty:-2.16%; --trot:-6.72deg; --fs:28; --tw:58.68%">Danced Zumba for 5 years</span>
+        </li>
+        <li class="note" style="--x:80.92%; --y:20.62%; --w:184.15; --h:182.15; --rot:-14.27deg">
+          <i class="note__paper" style="inset:-12.73% -19.02% -17.64% -12.59%"><img src="assets/about/notes/note-3.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:-0.24%; --ty:-2.74%; --trot:-5.48deg; --fs:20; --tw:59.78%">I used to draw. I should probably do that again...</span>
+        </li>
+        <li class="note" style="--x:33.4%; --y:33.88%; --w:184.15; --h:182.15; --rot:16.27deg">
+          <i class="note__paper" style="inset:-12.73% -19.02% -17.64% -12.59%"><img src="assets/about/notes/note-4.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:-0.35%; --ty:-2.73%; --trot:-5.38deg; --fs:32; --tw:59.78%; --lh:0.969">Doing yoga since 2020</span>
+        </li>
+        <li class="note" style="--x:67.53%; --y:31.24%; --w:181.99; --h:176.91; --rot:24.68deg">
+          <i class="note__paper" style="inset:-13.02% -19.62% -20.68% -12.67%"><img src="assets/about/notes/note-5.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:-1.07%; --ty:-3.64%; --trot:-7.71deg; --fs:32; --tw:60.49%">I knit. Yes, really</span>
+        </li>
+        <li class="note" style="--x:60.64%; --y:52.14%; --w:169.48; --h:167.65; --rot:18.75deg">
+          <i class="note__paper" style="inset:-13.84% -20.75% -19.39% -13.7%"><img src="assets/about/notes/note-6.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:-0.55%; --ty:-4.32%; --trot:-6.71deg; --fs:22; --tw:64.96%">Judges restaurants by their menu font</span>
+        </li>
+        <li class="note" style="--x:41.25%; --y:56.75%; --w:181.99; --h:176.91; --rot:-17.99deg">
+          <i class="note__paper" style="inset:-13.02% -19.62% -20.68% -12.67%"><img src="assets/about/notes/note-7.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:-0.37%; --ty:-2.17%; --trot:-7.52deg; --fs:26; --tw:60.04%">Needs music to reset</span>
+        </li>
+        <li class="note" style="--x:22.94%; --y:66.42%; --w:187.6; --h:185.58; --rot:18.75deg">
+          <i class="note__paper" style="inset:-12.49% -18.65% -17.26% -12.36%"><img src="assets/about/notes/note-8.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:-0.75%; --ty:-2.02%; --trot:-6.71deg; --fs:28; --tw:58.68%">I take tiny things very seriously</span>
+        </li>
+        <li class="note" style="--x:76.02%; --y:64.22%; --w:173.28; --h:168.28; --rot:-11.11deg">
+          <i class="note__paper" style="inset:-13.71% -20.63% -21.75% -13.31%"><img src="assets/about/notes/note-9.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:0.41%; --ty:-1.11%; --trot:-6.94deg; --fs:24; --tw:56.87%">“But why?” is a lifestyle</span>
+        </li>
+        <li class="note" style="--x:57.82%; --y:72.33%; --w:184.15; --h:182.15; --rot:-14.27deg">
+          <i class="note__paper" style="inset:-12.73% -19.02% -17.64% -12.59%"><img src="assets/about/notes/note-10.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:0.83%; --ty:-2.62%; --trot:-5.48deg; --fs:22; --tw:64.81%">Never has “final_final_v2”</span>
+        </li>
+        <li class="note" style="--x:36.4%; --y:83%; --w:173.28; --h:168.28; --rot:22.15deg">
+          <i class="note__paper" style="inset:-13.71% -20.63% -21.75% -13.31%"><img src="assets/about/notes/note-11.svg" alt="" draggable="false"></i>
+          <span class="note__text" style="--tx:-0.06%; --ty:-2.33%; --trot:-6.94deg; --fs:22; --tw:65.36%">Could eat sushi every day.</span>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer id="contact" class="footer">
+    <!-- Closing line: the top of the footer -->
+    <div class="footer__cta container reveal">
+      <h2 class="footer__title">Got something worth<br>complaining about?</h2>
+      <p class="footer__subtitle">I'm open to brand design roles and collaborations.</p>
+    </div>
+
+    <div class="footer__inner container">
+      <p class="footer__copy">Maya Amor | All Rights Reserved ©</p>
+
+      <div class="footer__contact">
+        <span>Maya4085@gmail.com</span>
+        <span>052-2256403</span>
+      </div>
+
+      <div class="footer__actions">
+        <nav class="pill-nav pill-nav--footer" aria-label="External links">
+          <a class="pill-nav__link" href="assets/Maya%20Amor%20Resume.pdf" target="_blank" rel="noopener">Resume</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating back-to-top button, appears once you start scrolling -->
+  <a class="back-to-top" href="#top" aria-label="Back to top">
+    <img src="assets/icons/back-to-top.svg" alt="" width="47" height="47">
+  </a>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Local preview server (not part of the website)
+.claude/
+
+# Template for new case studies (not linked from the site)
+case-study-template.html
+
+# System files
+Thumbs.db
+desktop.ini
+.DS_Store

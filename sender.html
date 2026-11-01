@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <title>Sender case study | Maya Amor</title>
+  <meta name="description" content="What if marketing could be persuasive without being manipulative? Designing an AI in-editor experience for the Sender marketing platform.">
+
+  <!-- Link preview (LinkedIn, WhatsApp, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Maya Amor">
+  <meta property="og:title" content="Sender case study | Maya Amor">
+  <meta property="og:description" content="What if marketing could be persuasive without being manipulative? Designing an AI in-editor experience for the Sender marketing platform.">
+  <meta property="og:url" content="https://maya-amor.github.io/branding/sender.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://maya-amor.github.io/branding/sender.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@300..700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Lets CSS know JavaScript is on, so scroll animations only hide content when they can reveal it -->
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body class="page-case page-case--sender">
+
+  <!-- ===== Sticky header (already docked on this page) ===== -->
+  <header class="site-header">
+
+    <a class="site-header__logo" href="index.html" aria-label="Maya Amor, home">
+      <img src="assets/icons/logo.svg" alt="" width="46" height="56">
+    </a>
+
+    <button class="site-header__menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="site-header__nav" id="site-nav">
+      <nav class="pill-nav" aria-label="Main">
+        <a class="pill-nav__link" href="index.html#projects" aria-current="page">My projects</a>
+        <a class="pill-nav__link" href="about.html">About</a>
+        <a class="pill-nav__link" href="#contact">Let’s Talk</a>
+        <a class="pill-nav__link" href="assets/Maya%20Amor%20Resume.pdf" target="_blank" rel="noopener">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="cs container">
+
+    <!-- ===== Intro ===== -->
+    <div class="cs-hero">
+      <nav class="cs-breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html#projects">
+          <img src="assets/icons/breadcrumb-arrow.svg" alt="" width="23" height="8">
+          Case studies
+        </a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page"><strong>Sender</strong></span>
+      </nav>
+
+      <h1 class="cs-title cs-title--sender">What if marketing could be persuasive without being manipulative?</h1>
+      <p class="cs-lead">Designing an AI in-editor experience that helps marketers identify and replace manipulative language, while preserving conversion goals and creative control.</p>
+
+      <figure class="cs-shot cs-shot--hero">
+        <img src="assets/sender/hero.png" alt="Sender's Create SMS campaign screen: the message editor with an improved phrasing suggestion next to the original text, and a phone preview of the SMS" width="1920" height="1137">
+      </figure>
+    </div>
+
+    <!-- ===== Project overview ===== -->
+    <section class="cs-section cs-overview cs-overview--sender reveal" id="overview" data-section="Overview">
+      <div>
+        <h2 class="cs-h2 cs-h2--accent">Project Overview</h2>
+        <div class="cs-text">
+          <p>Sender is a B2B <strong>email marketing</strong> platform that helps businesses <strong>create, automate, and send email campaigns.</strong></p>
+          <p>Our project focused on <strong>introducing a new writing experience</strong> that helps marketers <strong>identify and replace manipulative language</strong> within their campaigns.</p>
+        </div>
+      </div>
+
+      <dl class="cs-facts">
+        <div>
+          <dt>My Role</dt>
+          <dd>Product Designer</dd>
+        </div>
+        <div>
+          <dt>Timeline</dt>
+          <dd>April - July 2026</dd>
+        </div>
+        <div>
+          <dt>Team</dt>
+          <dd>4 Design students</dd>
+        </div>
+        <div>
+          <dt>Project Type</dt>
+          <dd>Academic, Product Design</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- ===== The challenge ===== -->
+    <section class="cs-section reveal" id="challenge" data-section="Challenge">
+      <div class="cs-panel">
+        <h2 class="cs-panel__title">The challenge</h2>
+        <div class="cs-text">
+          <p>Marketing tools are built to optimize conversion, but the pressure to drive results can push marketers toward manipulative language.</p>
+          <p>How might we help marketers <strong>identify and replace manipulative copy</strong> while still creating campaigns that <strong>achieve their goals</strong>?</p>
+        </div>
+      </div>
+      <div class="cs-crop">
+        <img src="assets/sender/challenge.jpg" alt="The original Sender SMS editor with an urgent promotional message: “Hop into beauty savings, 50% OFF makeup for Easter! Hurry, sale won't last”" width="1534" height="911" loading="lazy">
+      </div>
+    </section>
+
+    <!-- ===== Who are we solving for ===== -->
+    <section class="cs-section reveal" id="audience" data-section="Audience">
+      <h2 class="cs-h2">Who are we solving for?</h2>
+      <div class="cs-text">
+        <p><strong>We mapped Sender's</strong> main workflows with Claude and <strong>defined four Jobs to Be Done for our target user - a Digital Marketing Manager</strong>: sending an SMS campaign, sending a designed email campaign, setting up an abandoned cart automation, and analyzing campaign performance.</p>
+      </div>
+      <div class="cs-callout cs-callout--jtbd">
+        <p class="cs-callout__lead">The JTBD we chose to focus on was <strong>sending an SMS campaign to customers.</strong></p>
+        <p>SMS is naturally built for urgency - <strong>short, direct messages meant to drive immediate action</strong>, whether that's visiting a website, making a purchase, or visiting a store. <strong>But the same qualities that make SMS effective can also make it easy to rely on manipulative tactics</strong>, such as scarcity claims, artificial urgency, and undue pressure.</p>
+      </div>
+    </section>
+
+    <!-- ===== Defining the opportunity ===== -->
+    <section class="cs-section" id="opportunity" data-section="Opportunity">
+      <div class="reveal">
+        <h2 class="cs-h2">Defining the opportunity</h2>
+        <div class="cs-text">
+          <p>Mapping the campaign creation flow helped us understand where our solution could integrate into the marketer's existing workflow.</p>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <h3 class="cs-h4 cs-h4--navy">The existing flow</h3>
+        <div class="xflow" role="img" aria-label="The existing flow: Enter the Dashboard, go to SMS Campaigns, create a new campaign, write the message and edit, preview the message, send a test SMS to a personal number, select the target audience, then review and send.">
+          <div class="xflow__row" aria-hidden="true">
+            <span class="navmap__node navmap__node--root">Enter the Dashboard</span>
+            <span class="xflow__arrow"></span>
+            <span class="navmap__node">Go to SMS Campaigns</span>
+            <span class="xflow__arrow"></span>
+            <span class="navmap__node">Create a New Campaign</span>
+            <span class="xflow__arrow"></span>
+            <span class="navmap__node">Write the message + edit</span>
+          </div>
+          <div class="xflow__turn" aria-hidden="true"><span></span></div>
+          <div class="xflow__row" aria-hidden="true">
+            <span class="navmap__node">Preview the message</span>
+            <span class="xflow__arrow"></span>
+            <span class="navmap__node">Send a test SMS to a personal number</span>
+            <span class="xflow__arrow"></span>
+            <span class="navmap__node">Select the target audience</span>
+            <span class="xflow__arrow"></span>
+            <span class="navmap__node">Review &amp; Send</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <p class="cs-text cs-center">For any intervention to succeed within this flow, it needed to be:</p>
+        <ul class="cs-cards cs-cards--3">
+          <li class="cs-card">
+            <h4 class="cs-card__title">Visible</h4>
+            <p>Help marketers notice potentially manipulative language.</p>
+          </li>
+          <li class="cs-card">
+            <h4 class="cs-card__title">Optional</h4>
+            <p>Encourage better choices without forcing an additional friction step.</p>
+          </li>
+          <li class="cs-card">
+            <h4 class="cs-card__title">Under creative control</h4>
+            <p>Let marketers decide whether and how to change their copy.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== Exploring the solution ===== -->
+    <section class="cs-section" id="exploring" data-section="Exploring">
+      <div class="reveal">
+        <h2 class="cs-h2">Exploring the solution</h2>
+        <div class="cs-text">
+          <p>With the opportunity defined, we explored different ways to introduce this intervention into the campaign creation experience.</p>
+        </div>
+      </div>
+
+      <div class="cs-options cs-block">
+        <article class="cs-option reveal">
+          <img class="cs-option__shot" src="assets/sender/option-1.png" alt="Wireframe of a dedicated dashboard with a sidebar, a score chart and campaign widgets" width="802" height="447" loading="lazy">
+          <h3 class="cs-option__title">Option 1: A dedicated dashboard</h3>
+          <div class="cs-text">
+            <p>Our first direction was to create a dedicated dashboard where marketers could monitor the level of manipulative language across campaigns and receive a periodic score.</p>
+          </div>
+          <div class="cs-verdict cs-verdict--bad">
+            <img src="assets/icons/icon-x.svg" alt="" width="24" height="24">
+            <div>
+              <p><strong>Why we moved away from it:</strong><br>This concept raised more questions than it solved within the existing workflow. How would marketers maintain their score? What would motivate regular engagement? Furthermore, could encouraging additional messages just to grow audience reach create another form of unwanted communication?</p>
+            </div>
+          </div>
+          <p class="cs-conclusion">We realized we shouldn't solve one dark pattern by introducing another.</p>
+        </article>
+
+        <article class="cs-option reveal">
+          <img class="cs-option__shot" src="assets/sender/option-2.png" alt="Wireframe of a review screen shown right before sending a campaign" width="802" height="447" loading="lazy">
+          <h3 class="cs-option__title">Option 2: A pre send intervention</h3>
+          <div class="cs-text">
+            <p>We then explored triggering the solution at the final step, just before sending a campaign, allowing users to review potentially manipulative copy and improve it right before sending.</p>
+          </div>
+          <div class="cs-verdict cs-verdict--bad">
+            <img src="assets/icons/icon-x.svg" alt="" width="24" height="24">
+            <div>
+              <p><strong>Why we moved away from it:</strong><br>The intervention relied on the marketer actively choosing to enter a separate review state at the moment they were already primed to send.</p>
+            </div>
+          </div>
+          <p class="cs-conclusion">If an intervention requires an extra step, there is no guarantee the user will engage with it.</p>
+        </article>
+      </div>
+
+      <div class="cs-panel cs-block reveal">
+        <h3 class="cs-panel__title cs-panel__title--accent">Option 3: Bringing the intervention into the editor</h3>
+        <div class="cs-panel__grid">
+          <div class="cs-text">
+            <p>Both previous directions treated the intervention as a separate destination rather than a native part of the writing process.</p>
+            <p><strong>Instead, we explored embedding it directly into the text editor, helping marketers identify potentially manipulative language in real time as they write.</strong></p>
+            <p>This met all three criteria simultaneously: it was visible without requiring a separate page visit, optional without needing to be triggered, and it kept the writing and control, in the marketer's hands.</p>
+          </div>
+          <img class="cs-panel__shot" src="assets/sender/option-3.png" alt="Wireframe of the campaign editor with the intervention highlighted inside the message text box" width="802" height="447" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Iterating the experience ===== -->
+    <section class="cs-section" id="iterating" data-section="Iterating">
+      <div class="reveal">
+        <h2 class="cs-h2">Iterating the experience</h2>
+        <div class="cs-text">
+          <p>Once we decided to embed the intervention directly into the editor, our next challenge was determining how it should function operationally.</p>
+        </div>
+      </div>
+
+      <div class="cs-iters">
+        <article class="cs-iter reveal">
+          <img class="cs-iter__shot" src="assets/sender/iteration-1.png" alt="Iteration 1: the message editor with a warning icon next to “Message text” and flagged phrases boxed in orange" width="819" height="572" loading="lazy">
+          <h3 class="cs-iter__title">1. An alert driven intervention</h3>
+          <div class="cs-verdict cs-verdict--good">
+            <img src="assets/icons/icon-check.svg" alt="" width="24" height="24">
+            <div>
+              <h4>What worked</h4>
+              <p>Made potentially manipulative copy visible directly within the editor.</p>
+              <p>Provided users with access to AI-generated alternatives.</p>
+            </div>
+          </div>
+          <div class="cs-verdict cs-verdict--bad">
+            <img src="assets/icons/icon-x.svg" alt="" width="24" height="24">
+            <div>
+              <h4>What didn’t</h4>
+              <p>The warning icon served a dual purpose as both a passive alert and an active trigger, making its behavior unclear.</p>
+              <p>The generated alternatives appeared in a side panel positioned far from the relevant text.</p>
+              <p>The system dictated which alternatives were "better" without giving the marketer enough flexibility.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="cs-iter reveal">
+          <img class="cs-iter__shot" src="assets/sender/iteration-2.png" alt="Iteration 2: an “AI improver” toggle turns on an editing mode with numbered flagged phrases, a history button and suggested alternatives" width="787" height="672" loading="lazy">
+          <h3 class="cs-iter__title">2. Entering an AI editing mode</h3>
+          <div class="cs-verdict cs-verdict--good">
+            <img src="assets/icons/icon-check.svg" alt="" width="24" height="24">
+            <div>
+              <h4>What worked</h4>
+              <p>Moved the interaction closer to the active writing area</p>
+              <p>Introduced controls to regenerate, undo or remove changes, and review previous generations.</p>
+            </div>
+          </div>
+          <div class="cs-verdict cs-verdict--bad">
+            <img src="assets/icons/icon-x.svg" alt="" width="24" height="24">
+            <div>
+              <h4>What didn’t</h4>
+              <p>A simple toggle switch implied a minor state change while actually triggering a disruptive, heavy weight editing experience.</p>
+              <p>It was unclear when changes auto saved or what happened upon exiting the mode.</p>
+              <p>The UI became overly complex, with multiple controls competing for attention.</p>
+              <p>Using a dropdown to navigate flagged sentences became cumbersome as volume increased.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="cs-iter reveal">
+          <img class="cs-iter__shot" src="assets/sender/iteration-3.png" alt="Iteration 3: an “Edit with AI” button above the message, with a regenerated sentence in a box below and Regenerate, Clear and Save Changes buttons" width="819" height="864" loading="lazy">
+          <h3 class="cs-iter__title">3. Testing the interaction</h3>
+          <p class="cs-note">User testing: Evaluated with a product designer using our working prototype.</p>
+          <div class="cs-verdict cs-verdict--good">
+            <img src="assets/icons/icon-check.svg" alt="" width="24" height="24">
+            <div>
+              <h4>What worked</h4>
+              <p>Problematic copy was visually identifiable.</p>
+              <p>Users could interact with individual problematic sentences to regenerate alternatives</p>
+            </div>
+          </div>
+          <div class="cs-verdict cs-verdict--bad">
+            <img src="assets/icons/icon-x.svg" alt="" width="24" height="24">
+            <div>
+              <h4>What didn’t</h4>
+              <p>The AI action prompt wasn't noticeable enough after entering problematic copy.</p>
+              <p>Users expected the generated text to be directly editable inline.</p>
+              <p>The value of the suggestions wasn't immediately clear.</p>
+              <p>Generated content sat too far from the source text for easy comparison.</p>
+              <p>Saving changes lacked clear feedback.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="cs-iter reveal">
+          <img class="cs-iter__shot" src="assets/sender/iteration-4.png" alt="Iteration 4: the original message and the AI version side by side in the same card, with Rephrasing, Replace all and Apply changes actions" width="819" height="572" loading="lazy">
+          <h3 class="cs-iter__title">4. Bringing the comparison into the editor</h3>
+          <div class="cs-verdict cs-verdict--good">
+            <img src="assets/icons/icon-check.svg" alt="" width="24" height="24">
+            <div>
+              <h4>What worked</h4>
+              <p>Created a clearer side by side visual separation between the original copy and AI generated versions.</p>
+              <p>Highlighted problematic text inline.</p>
+              <p>Allowed users to regenerate specific sentences instead of replacing the entire paragraph.</p>
+              <p>Kept the review and editing experience within the same card.</p>
+            </div>
+          </div>
+          <div class="cs-verdict cs-verdict--bad">
+            <img src="assets/icons/icon-x.svg" alt="" width="24" height="24">
+            <div>
+              <h4>What didn’t</h4>
+              <p>The "Rephrase" action wasn't positioned intuitively.</p>
+              <p>The generated box didn’t look sufficiently distinct from an editable text field.</p>
+              <p>The "Rephrase" action needed to remain accessible post-save for iterative tweaks.</p>
+              <p>Applied changes needed stronger visual confirmation.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== The possible solution ===== -->
+    <section class="cs-section" id="solution" data-section="Solution">
+      <div class="reveal">
+        <h2 class="cs-h2">The possible solution</h2>
+        <p class="cs-subtitle cs-subtitle--lg">An AI assisted writing experience that keeps the marketer in complete control.</p>
+        <div class="cs-text cs-block--tight">
+          <p>Our final direction builds on the interaction model refined through iterative prototyping and user testing. <strong class="cs-hl">We integrated AI assistance directly into the writing canvas</strong><strong>, allowing marketers to spot potentially cognitive-heavy or manipulative copy, review alternative phrasing, and decide which edits to apply</strong> - all without breaking their creative flow.</p>
+        </div>
+      </div>
+
+      <!-- Annotated screenshots: the editor sits undimmed on top of the dimmed screen -->
+      <figure class="anno reveal">
+        <div class="anno__stage">
+          <div class="anno__shot">
+            <img class="anno__img" src="assets/sender/solution-1.png" alt="The final SMS editor: a toast above the message says “Some phrases may sound too pushy, Rephrase”, and flagged phrases have a blue wavy underline" width="1920" height="1137" loading="lazy">
+            <img class="anno__focus" src="assets/sender/solution-1-editor.png" alt="" style="left:15.95%; top:43.8%; width:36.4%; height:40.8%" loading="lazy">
+          </div>
+          <!-- Arrows from each note to what it points at (drawn by js/main.js) -->
+          <svg class="anno__links" aria-hidden="true" data-links='[{"from":"bottom","points":[[55.8,48.2],[51.66,48.2]]},{"from":"top","points":[[25.33,60.59],[29.52,60.59]]}]'></svg>
+          <div class="anno__notes">
+            <p class="anno__note" style="left:42.21%; top:20.37%; width:25.11%"><strong>Entry point to AI assistance</strong> Unlike earlier iterations relying on persistent toggles or heavy icons, a subtle toast appears only when manipulative language is detected. Tapping "Rephrase" is the sole trigger, keeping the writing flow uninterrupted.</p>
+            <p class="anno__note" style="left:9.87%; top:65.55%; width:23.46%"><strong>Contextual feedback</strong> Potentially manipulative copy is highlighted with a blue wavy underline, adopting a familiar mental model from standard text editors.</p>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="anno reveal">
+        <div class="anno__stage">
+          <div class="anno__shot">
+            <img class="anno__img" src="assets/sender/solution-2.png" alt="The editor showing the original message and the AI suggestion side by side, with a tooltip on a flagged sentence" width="1920" height="1137" loading="lazy">
+            <img class="anno__focus" src="assets/sender/solution-2-editor.png" alt="" style="left:15.93%; top:43.81%; width:36.36%; height:42.87%" loading="lazy">
+          </div>
+          <svg class="anno__links" aria-hidden="true" data-links='[{"from":"bottom","points":[[28.52,46.4],[31.08,46.4],[31.08,50]]},{"from":"bottom","points":[[38.6,46.4],[36.04,46.4],[36.04,50]]},{"tail":[47.83,52.49],"corner":[42.93,52.49],"head":[42.93,57.84]}]'></svg>
+          <div class="anno__notes">
+            <p class="anno__note" style="left:21.32%; top:26.78%; width:25.01%"><strong>Original vs AI suggestion</strong> The original copy and AI generated alternative are presented side by side, clarifying modifications at a glance.</p>
+            <p class="anno__note" style="left:47.83%; top:43.81%; width:24.25%">Hovering over a flagged sentence reveals a quick tooltip, confirming that only that specific sentence will be replaced - not the entire message.</p>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="anno reveal">
+        <div class="anno__stage">
+          <div class="anno__shot">
+            <img class="anno__img" src="assets/sender/hero.png" alt="The editor after applying a change, with Dismiss and Save changes buttons and the replaced sentence highlighted" width="1920" height="1137" loading="lazy">
+            <img class="anno__focus" src="assets/sender/solution-3-editor.png" alt="" style="left:15.94%; top:43.53%; width:36.44%; height:42.95%" loading="lazy">
+          </div>
+          <svg class="anno__links" aria-hidden="true" data-links='[{"tail":[33.82,44.02],"corner":[33.82,60.94],"head":[36.02,60.94]},{"tail":[52.08,51.93],"corner":[48.44,51.93],"head":[48.44,49.68]},{"tail":[53.51,65.06],"corner":[53.51,60.94],"head":[50.53,60.94]}]'></svg>
+          <div class="anno__notes">
+            <p class="anno__note" style="left:17.54%; top:18.35%; width:30.04%"><strong>From warning to guidance</strong> We moved away from aggressive red warning states and introduced blue as our primary feedback accent. The goal was to frame the system as informative guidance rather than punishment - positioning the marketer not as a rule breaker, but as someone being offered an opportunity to refine their phrasing.</p>
+            <p class="anno__note" style="left:52.08%; top:40.61%; width:22.15%"><strong>User control</strong> Marketers can review, regenerate, dismiss, or save changes directly to update their original text.</p>
+            <p class="anno__note" style="left:50.88%; top:65.06%; width:22.48%"><strong>Clear feedback</strong> Applying changes triggers a subtle fade transition to visually confirm that the original copy has been successfully replaced.</p>
+          </div>
+        </div>
+      </figure>
+    </section>
+
+    <!-- ===== Reflection ===== -->
+    <section class="cs-section" id="reflection" data-section="Reflection">
+      <h2 class="cs-h2 reveal">Reflection</h2>
+      <ul class="cs-cards cs-cards--2 cs-cards--reflection reveal">
+        <li class="cs-card">
+          <h3 class="cs-card__title">The intervention must fit the workflow</h3>
+          <p>We initially explored solutions that added structural bloat. <strong>Through rapid prototyping, we realized interventions are most effective when woven directly into existing writing habits.</strong></p>
+        </li>
+        <li class="cs-card">
+          <h3 class="cs-card__title">AI suggestions require context</h3>
+          <p>Simply generating an alternative isn't enough. Users need to understand why a suggestion works so they can evaluate whether it genuinely aligns with their campaign intent</p>
+        </li>
+        <li class="cs-card">
+          <h3 class="cs-card__title">Micro interactions can change the whole experience</h3>
+          <p>Seemingly trivial decisions, such as button placement, entry states, save mechanics, or layout proximity - profoundly dictate the overall usability of an AI tool.</p>
+        </li>
+        <li class="cs-card">
+          <h3 class="cs-card__title">Testing challenges assumptions</h3>
+          <p>Interactions that felt intuitive to our internal team revealed visibility, hierarchy, and feedback gaps during user testing that we would have otherwise missed.</p>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer id="contact" class="footer">
+    <!-- Closing line: the top of the footer -->
+    <div class="footer__cta container reveal">
+      <h2 class="footer__title">Got something worth<br>complaining about?</h2>
+      <p class="footer__subtitle">I'm open to brand design roles and collaborations.</p>
+    </div>
+
+    <div class="footer__inner container">
+      <p class="footer__copy">Maya Amor | All Rights Reserved ©</p>
+
+      <div class="footer__contact">
+        <span>Maya4085@gmail.com</span>
+        <span>052-2256403</span>
+      </div>
+
+      <div class="footer__actions">
+        <nav class="pill-nav pill-nav--footer" aria-label="External links">
+          <a class="pill-nav__link" href="assets/Maya%20Amor%20Resume.pdf" target="_blank" rel="noopener">Resume</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating back-to-top button, appears once you start scrolling -->
+  <a class="back-to-top" href="#top" aria-label="Back to top">
+    <img src="assets/icons/back-to-top.svg" alt="" width="47" height="47">
+  </a>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
