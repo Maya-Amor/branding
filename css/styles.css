@@ -3201,6 +3201,45 @@ ul {
   height: auto;
 }
 
+/* ----- Typing cover (Home: Dracula card) -----
+   Words are typed and erased by js/main.js; the cursor blinks while waiting
+   and stays solid while typing (.is-typing). */
+.type-cover {
+  display: grid;
+  place-items: center;
+  background: #000;
+}
+
+.type-cover__line {
+  font-family: "Dracula", var(--font-sans);
+  font-size: 11.6cqi;             /* scales with the card; "גופן דרקולה" fills ~70% of it, as in the hero */
+  line-height: 1.2;
+  color: #ff9500;
+  white-space: nowrap;
+}
+
+.type-cover__cursor {
+  display: inline-block;
+  width: 0.06em;
+  height: 0.85em;
+  margin-inline-start: 0.08em;
+  vertical-align: -0.05em;
+  background: currentColor;
+  animation: type-cursor 1s steps(1) infinite;
+}
+
+.type-cover.is-typing .type-cover__cursor {
+  animation: none;
+}
+
+@keyframes type-cursor {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .type-cover__cursor { animation: none; }
+}
+
 /* ----- Logo slideshow (Home card cover) -----
    All six slides sit on top of each other; each fades in on its turn (--i),
    stays ~2.5s, and the next fades in over it. One cycle = 6 × 2.5s = 15s.

@@ -627,6 +627,51 @@ if (heroNote) {
   });
 }
 
+// ----- Home: typing cover (Dracula card) -----
+// Holds the first word, erases it letter by letter, types the next one, and so on.
+// Runs only while the card is on screen; with reduced motion the first word just stays.
+document.querySelectorAll(".type-cover").forEach((cover) => {
+  const text = cover.querySelector(".type-cover__text");
+  const words = cover.dataset.words.split("|");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const TYPE = 110;   // ms per letter typed
+  const ERASE = 55;   // ms per letter erased
+  const HOLD = 1800;  // ms a full word stays
+  const GAP = 400;    // ms of empty line between words
+
+  let onScreen = false;
+  new IntersectionObserver(([entry]) => { onScreen = entry.isIntersecting; }).observe(cover);
+
+  let word = 0;
+  let letters = [...words[0]].length;
+  let erasing = true;
+
+  const step = () => {
+    if (!onScreen) return setTimeout(step, 300);
+
+    const chars = [...words[word]];
+    if (erasing) {
+      letters -= 1;
+      if (letters <= 0) {
+        letters = 0;
+        erasing = false;
+        word = (word + 1) % words.length;
+      }
+    } else {
+      letters += 1;
+      if (letters >= chars.length) erasing = true;
+    }
+
+    text.textContent = [...words[word]].slice(0, letters).join("");
+    const done = erasing && letters === [...words[word]].length; // word fully typed
+    cover.classList.toggle("is-typing", !done && letters > 0);
+    setTimeout(step, done ? HOLD : letters === 0 ? GAP : erasing ? ERASE : TYPE);
+  };
+
+  setTimeout(step, HOLD);
+});
+
 // ----- Case study videos: autoplay on a loop, without sound -----
 // Visitors who turn off motion in their system settings get a still first frame instead.
 if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
