@@ -635,10 +635,10 @@ document.querySelectorAll(".type-cover").forEach((cover) => {
   const words = cover.dataset.words.split("|");
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const TYPE = 110;   // ms per letter typed
-  const ERASE = 55;   // ms per letter erased
-  const HOLD = 1800;  // ms a full word stays
-  const GAP = 400;    // ms of empty line between words
+  const TYPE = 220;   // ms per letter typed
+  const ERASE = 110;  // ms per letter erased
+  const HOLD = 2800;  // ms a full word stays
+  const GAP = 700;    // ms of empty line between words
 
   let onScreen = false;
   new IntersectionObserver(([entry]) => { onScreen = entry.isIntersecting; }).observe(cover);
