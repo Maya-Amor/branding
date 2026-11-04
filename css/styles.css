@@ -3201,22 +3201,47 @@ ul {
   height: auto;
 }
 
-/* Home card cover: the six logos as tiles, 3 × 2 */
-.logo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+/* ----- Logo slideshow (Home card cover) -----
+   All six slides sit on top of each other; each fades in on its turn (--i),
+   stays ~2.5s, and the next fades in over it. One cycle = 6 × 2.5s = 15s.
+   The -0.5s offset makes the first logo visible right away. */
+.logo-show {
+  position: relative;
+  display: block;
 }
 
-.logo-grid span {
+.logo-show > span {
+  position: absolute;
+  inset: 0;
   display: grid;
   place-items: center;
   background: var(--bg);
+  opacity: 0;
+  animation: logo-show 15s linear infinite both;
+  animation-delay: calc(var(--i) * 2.5s - 0.5s);
 }
 
-.logo-grid img {
+.logo-show img {
   width: var(--w);
   height: auto;
+}
+
+/* The incoming slide fades in on top (z-index 3) while the outgoing one stays
+   solid underneath (2), so the white card never shows through mid-fade;
+   then the outgoing one drops out of sight (1). */
+@keyframes logo-show {
+  0%      { opacity: 0; z-index: 3; }
+  3.33%   { opacity: 1; z-index: 3; }   /* 0.5s fade in, on top */
+  3.34%   { z-index: 2; }
+  20%     { opacity: 1; z-index: 2; }   /* solid until the next one has fully faded in */
+  20.01%  { opacity: 0; z-index: 1; }
+  100%    { opacity: 0; z-index: 1; }
+}
+
+/* No motion: just the first logo */
+@media (prefers-reduced-motion: reduce) {
+  .logo-show > span { animation: none; }
+  .logo-show > span:first-child { opacity: 1; }
 }
 
 /* Phones: logos a bit larger so they stay readable */

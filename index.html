@@ -260,15 +260,16 @@
           </a>
         </div>
 
-        <!-- Cover: the six logos as small tiles, each on its band color -->
+        <!-- Cover: one logo at a time on its band color, crossfading to the next
+             (--i: its turn in the cycle, --w: logo width; see "Logo slideshow" in css/styles.css) -->
         <a class="project__card project__card--outlined" href="logos.html" aria-label="View the Logos project">
-          <span class="project__cover logo-grid">
-            <span style="--bg:#fff"><img src="assets/Logos/Invite%20us.png" alt="" width="1128" height="551" style="--w:72%"></span>
-            <span style="--bg:#e8e8e8"><img src="assets/Logos/Roomme.svg" alt="" width="446" height="132" style="--w:70%"></span>
-            <span style="--bg:#323232"><img src="assets/Logos/updated.png" alt="" width="962" height="278" style="--w:72%"></span>
-            <span style="--bg:#f2ebe3"><img src="assets/Logos/noss.png" alt="" width="762" height="298" style="--w:58%"></span>
-            <span style="--bg:#fff"><img src="assets/Logos/calypso.png" alt="" width="820" height="294" style="--w:64%"></span>
-            <span style="--bg:#323232"><img src="assets/Logos/Guy%20shamir.png" alt="" width="939" height="330" style="--w:70%"></span>
+          <span class="project__cover logo-show">
+            <span style="--i:0; --bg:#fff"><img src="assets/Logos/Invite%20us.png" alt="" width="1128" height="551" style="--w:50%"></span>
+            <span style="--i:1; --bg:#e8e8e8"><img src="assets/Logos/Roomme.svg" alt="" width="446" height="132" style="--w:46%"></span>
+            <span style="--i:2; --bg:#323232"><img src="assets/Logos/updated.png" alt="" width="962" height="278" style="--w:48%"></span>
+            <span style="--i:3; --bg:#f2ebe3"><img src="assets/Logos/noss.png" alt="" width="762" height="298" style="--w:38%"></span>
+            <span style="--i:4; --bg:#fff"><img src="assets/Logos/calypso.png" alt="" width="820" height="294" style="--w:42%"></span>
+            <span style="--i:5; --bg:#323232"><img src="assets/Logos/Guy%20shamir.png" alt="" width="939" height="330" style="--w:46%"></span>
           </span>
         </a>
 
