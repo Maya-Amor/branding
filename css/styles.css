@@ -3179,6 +3179,59 @@ ul {
   .brand-duo img { height: auto; }
 }
 
+/* =========================================================
+   Logos (logos.html): one full-width band per logo
+   ========================================================= */
+.logo-bands {
+  margin: 2.375rem 0 0;           /* Figma: 38px under the subtitle */
+  padding: 0;
+  list-style: none;
+}
+
+/* Figma: 1200 × 400 bands, logo centered at its own width (--w) */
+.logo-band {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 1;
+  background: var(--bg);
+}
+
+.logo-band img {
+  width: var(--w);
+  height: auto;
+}
+
+/* Home card cover: the six logos as tiles, 3 × 2 */
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.logo-grid span {
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+}
+
+.logo-grid img {
+  width: var(--w);
+  height: auto;
+}
+
+/* Phones: logos a bit larger so they stay readable */
+@media (max-width: 640px) {
+  .logo-bands { margin-top: 2rem; }
+
+  /* A fixed height (not 3:1, which would be too short on a phone) */
+  .logo-band {
+    aspect-ratio: auto;
+    height: 13rem;
+  }
+
+  .logo-band img { width: min(calc(var(--w) * 1.6), 78%); }
+}
+
 /* ----- Square social post mockup, centered (Figma: 713px) ----- */
 .brand-post {
   width: 71%;                     /* 713 / 1004 */
